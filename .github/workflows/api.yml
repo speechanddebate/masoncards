@@ -1,4 +1,4 @@
-name: Tabroom API CI
+name: Tabroom Masoncards CI
 
 on:
   push:
