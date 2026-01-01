@@ -10,7 +10,7 @@ export const config = {
 	BASE_URL 			  : 'http://api.dev.tabroom.com',
 	LOGIN_URL             : 'http://mason.dev.tabroom.com/user/login/login.mhtml',
 	DOCKERHOST		      : 'devenv',
-	CODE_PATH             : '/www/indexcards',
+	CODE_PATH             : '/www/masoncards',
 	MAIL_FROM			  : 'live@www.tabroom.com',
 	MAIL_SERVER			  : 'localhost',
 	MAIL_PORT			  : 25,
@@ -94,7 +94,7 @@ switch (env) {
 		config.DB_USER          = 'tabroom';
 		config.DB_PASS          = '';
 		config.MESSAGE_RATE_MAX = '1000000000';
-		config.LOG_PATH         = '/var/log/indexcards';
+		config.LOG_PATH         = '/var/log/masoncards';
 		break;
 
 	case 'development':
@@ -103,7 +103,7 @@ switch (env) {
 		config.DB_PASS          = 'lolz',
 		config.MESSAGE_RATE_MAX = '1000000000';
 		config.sequelizeOptions.logging = false;
-		config.LOG_PATH         = '/var/log/indexcards';
+		config.LOG_PATH         = '/var/log/masoncards';
 		break;
 
 	case 'test':

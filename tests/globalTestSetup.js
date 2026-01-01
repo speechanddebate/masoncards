@@ -45,7 +45,7 @@ export const setup = async () => {
 
 	console.log(`Database ${config.DB_DATABASE} is not loaded with the proper test data `);
 	console.log(`Test data should live in a separate database connected via the ${config.MODE} env `);
-	console.log(`and loaded from /indexcards/test/test.sql.  Yes this is a lazy way to do it, but `);
+	console.log(`and loaded from /masoncards/test/test.sql.  Yes this is a lazy way to do it, but `);
 	console.log(`until Tabroom has six developers working with me, that's how it's gonna be.`);
 	console.log(``);
 

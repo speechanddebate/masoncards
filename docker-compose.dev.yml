@@ -1,18 +1,18 @@
 services:
-  indexcards:
-    container_name: indexcards-dev
+  masoncards:
+    container_name: masoncards-dev
     build:
       context: .
       dockerfile: Dockerfile
-    image: indexcards-dev:latest
+    image: masoncards-dev:latest
     restart: always
     ports:
         - 8001:3000
     environment:
       - NODE_ENV=development
     volumes:
-      - /etc/tabroom/indexcards.config.dev.js:/indexcards/config/config.js:ro
-      - /var/log/indexcards:/var/log/indexcards:rw
+      - /etc/tabroom/masoncards.config.dev.js:/masoncards/config/config.js:ro
+      - /var/log/masoncards:/var/log/masoncards:rw
       - /var/lib/GeoIP:/geoip:ro
     extra_hosts:
       - "host.docker.internal:host-gateway"

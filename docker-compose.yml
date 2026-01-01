@@ -1,16 +1,16 @@
 version: '3'
 services:
-  indexcards:
-    container_name: indexcards
-    image: indexcards:latest
+  masoncards:
+    container_name: masoncards
+    image: masoncards:latest
     restart: always
     ports:
         - 9001:3000
     environment:
       - NODE_ENV=staging
     volumes:
-      - /etc/tabroom/indexcards.config.js:/indexcards/config/config.js:ro
-      - /var/log/indexcards:/var/log/indexcards:rw
+      - /etc/tabroom/masoncards.config.js:/masoncards/config/config.js:ro
+      - /var/log/masoncards:/var/log/masoncards:rw
       - /var/lib/GeoIP:/geoip:ro
     extra_hosts:
       - "host.docker.internal:host-gateway"

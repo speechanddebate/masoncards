@@ -1,3 +1,17 @@
+#Tabroom Stuff
+node_modules/
+coverage/
+/.env
+logs/
+.pm2/
+config/config.js
+*.swp
+*.swo
+#sorry
+.vscode
+npm*
+*.nvimlog
+
 # Logs
 logs
 *.log
@@ -137,3 +151,5 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+

@@ -1,5 +1,5 @@
 FROM node:22.21.0 AS base
-WORKDIR /indexcards
+WORKDIR /masoncards
 COPY ./ ./
 
 RUN npm i

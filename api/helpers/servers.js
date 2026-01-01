@@ -272,12 +272,12 @@ export const getLinodeInstances = async ( limit ) => {
 		if (proxyData) {
 			machine.uptime      = proxyData.uptime;
 			machine.mason       = proxyData.mason;
-			machine.indexcards  = proxyData.indexcards;
+			machine.masoncards  = proxyData.masoncards;
 			machine.loadOne     = proxyData['1m_cpu_load'];
 			machine.loadFive    = proxyData['5m_cpu_load'];
 			machine.loadFifteen = proxyData['15m_cpu_load'];
 			machine.mason       = proxyData.mason;
-			machine.indexcards  = proxyData.indexcards;
+			machine.masoncards  = proxyData.masoncards;
 
 			machine.memory = (proxyData.memory_available / proxyData.memory_total || 1);
 			machine.swap = (proxyData.swap_available / proxyData.swap_total || 1);
@@ -731,12 +731,12 @@ export const getProxyStatus = async(existingMachines) => {
 					downtime    : parsedProxyData[masonId]?.downtime || 0,
 				};
 
-				const indexcardsHost = `indexcards${machineNumber}${tick}`;
-				const indexcardsId = haproxyKey[indexcardsHost];
+				const masoncardsHost = `masoncards${machineNumber}${tick}`;
+				const masoncardsId = haproxyKey[masoncardsHost];
 
-				if (!machineStatus.indexcards) {
+				if (!machineStatus.masoncards) {
 					// The day may come when I iterate this properly.  BUT IT IS NOT THIS DAY.
-					machineStatus.indexcards = {
+					machineStatus.masoncards = {
 						1: {},
 						2: {},
 						3: {},
@@ -744,9 +744,9 @@ export const getProxyStatus = async(existingMachines) => {
 					};
 				}
 
-				machineStatus.indexcards[tick] = {
-					id          : indexcardsId,
-					status      : parsedProxyData[indexcardsId]?.status,
+				machineStatus.masoncards[tick] = {
+					id          : masoncardsId,
+					status      : parsedProxyData[masoncardsId]?.status,
 					checkStatus : parsedProxyData[masonId]?.check_status,
 					checkCode   : parsedProxyData[masonId]?.check_code,
 					downtime    : parsedProxyData[masonId]?.downtime || 0,
@@ -769,13 +769,13 @@ export const getProxyStatus = async(existingMachines) => {
 				},
 			};
 
-			const indexcardsHost = `indexcards-admin1`;
-			const indexcardsId = haproxyKey[indexcardsHost];
+			const masoncardsHost = `masoncards-admin`;
+			const masoncardsId = haproxyKey[masoncardsHost];
 
-			machineStatus.indexcards = {
+			machineStatus.masoncards = {
 				1: {
-					id          : indexcardsId,
-					status      : parsedProxyData[indexcardsId]?.status,
+					id          : masoncardsId,
+					status      : parsedProxyData[masoncardsId]?.status,
 					checkStatus : parsedProxyData[masonId]?.check_status,
 					checkCode   : parsedProxyData[masonId]?.check_code,
 					downtime    : parsedProxyData[masonId]?.downtime || 0,
@@ -783,7 +783,7 @@ export const getProxyStatus = async(existingMachines) => {
 			};
 
 			machineStatus.masonID      = haproxyKey[masonHost];
-			machineStatus.indexcardsID = haproxyKey[indexcardsHost];
+			machineStatus.masoncardsID = haproxyKey[masoncardsHost];
 		}
 
 		allStatus[machine.label] = machineStatus;

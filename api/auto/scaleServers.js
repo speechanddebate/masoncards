@@ -73,18 +73,13 @@ if (mode === 'show') {
 
 			if (machine.tags.includes(config.LINODE.WEBHOST_BASE)) {
 				let masonString = '\t\tMason Dockers\t';
-				let indexString = '\t\tIDX Dockers\t';
+				let masonApiString = '\t\tMasoncards Dockers\t';
 
 				[1,2,3,4].forEach( (tick) => {
 					masonString = `${masonString}${tick}: ${machine.mason[`${tick}`]?.status} ${machine.mason[`${tick}`]?.checkStatus}\t`;
-					indexString = `${indexString}${tick}: ${machine.indexcards[`${tick}`]?.status} ${machine.indexcards[`${tick}`]?.checkStatus}\t`;
+					masonApiString = `${masonApiString}${tick}: ${machine.masoncards[`${tick}`]?.status} ${machine.masoncards[`${tick}`]?.checkStatus}\t`;
 				});
-
-				console.log(masonString);
-				console.log(indexString);
 			}
-
-			console.log(` `);
 		});
 	};
 
