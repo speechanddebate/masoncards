@@ -714,13 +714,11 @@ export const getProxyStatus = async(existingMachines) => {
 				const masonId = haproxyKey[masonHost];
 
 				if (!machineStatus.mason) {
-					// The day may come when I iterate this properly.  BUT IT IS NOT THIS DAY.
-					machineStatus.mason = {
-						1: {},
-						2: {},
-						3: {},
-						4: {},
-					};
+					machineStatus.mason = {};
+				}
+
+				if (!machineStatus.mason[tick]) {
+					machineStatus.masoncards[tick] = {};
 				}
 
 				machineStatus.mason[tick] = {
@@ -735,13 +733,11 @@ export const getProxyStatus = async(existingMachines) => {
 				const masoncardsId = haproxyKey[masoncardsHost];
 
 				if (!machineStatus.masoncards) {
-					// The day may come when I iterate this properly.  BUT IT IS NOT THIS DAY.
-					machineStatus.masoncards = {
-						1: {},
-						2: {},
-						3: {},
-						4: {},
-					};
+					machineStatus.masoncards = {};
+				}
+
+				if (!machineStatus.masoncards[tick]) {
+					machineStatus.masoncards[tick] = {};
 				}
 
 				machineStatus.masoncards[tick] = {
@@ -751,6 +747,9 @@ export const getProxyStatus = async(existingMachines) => {
 					checkCode   : parsedProxyData[masonId]?.check_code,
 					downtime    : parsedProxyData[masonId]?.downtime || 0,
 				};
+
+				console.log(`machine status for ${tick} is `);
+				console.log(machineStatus);
 			}
 		}
 
