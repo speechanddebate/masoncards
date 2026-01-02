@@ -718,7 +718,7 @@ export const getProxyStatus = async(existingMachines) => {
 				}
 
 				if (!machineStatus.mason[tick]) {
-					machineStatus.masoncards[tick] = {};
+					machineStatus.mason[tick] = {};
 				}
 
 				machineStatus.mason[tick] = {
