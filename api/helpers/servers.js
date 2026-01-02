@@ -755,7 +755,7 @@ export const getProxyStatus = async(existingMachines) => {
 
 		if (machine.label.includes('tab-admin')) {
 
-			const masonHost = `mason-admin1`;
+			const masonHost = `mason-admin`;
 			const masonId   = haproxyKey[masonHost];
 
 			machineStatus.mason = {
