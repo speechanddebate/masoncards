@@ -60,9 +60,9 @@ export const pushSubscribe = {
 			`, {
 				replacements : {
 					subscriptionId : req.params.subscriptionId,
-					personId       : req.session.person
+					personId       : req.session.person,
 				},
-				type: req.db.Sequelize.QueryTypes.SELECT
+				type: req.db.Sequelize.QueryTypes.SELECT,
 			});
 
 			if (!mySession) {
@@ -117,9 +117,9 @@ export const pushSync = {
 				where and session.person = :personId
 			`, {
 				replacements : {
-					personId       : req.session.person
+					personId       : req.session.person,
 				},
-				type: req.db.Sequelize.QueryTypes.SELECT
+				type: req.db.Sequelize.QueryTypes.SELECT,
 			});
 
 			if (!mySession) {
