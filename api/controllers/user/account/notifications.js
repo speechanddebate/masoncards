@@ -14,6 +14,13 @@ export const pushSubscribe = {
 
 	GET  : async (req,res) => {
 
+		if (
+			!req.session.site_admin
+			&& req.session.person !== req.params.tabroomId
+		) {
+			return res.status(401).json('You do not have access that subscription');
+		}
+
 		try {
 
 			const reply = await axios.get(
@@ -41,7 +48,26 @@ export const pushSubscribe = {
 
 		if (!req.params.subscriptionId) {
 			errorLogger.error(`No subscriptionID sent to the updater`);
-			return res.status(200).json('Session subscription disabled');
+			return res.status(401).json('Session subscription disabled');
+		}
+
+		if (!req.session.site_admin) {
+			const mySession = await req.db.sequelize.query(`
+				select session.id
+				from session
+				where session.push_notify = :subscriptionId
+				and session.person = :personId
+			`, {
+				replacements : {
+					subscriptionId : req.params.subscriptionId,
+					personId       : req.session.person
+				},
+				type: req.db.Sequelize.QueryTypes.SELECT
+			});
+
+			if (!mySession) {
+				return res.status(401).json('You do not have access to that subscription');
+			}
 		}
 
 		const subscription = {
@@ -83,6 +109,23 @@ export const pushSync = {
 		const sessionId = req.body.sessionid || req.session.id;
 		const push_notify = req.body.subscriptionId || null;
 		const promises = [];
+
+		if (!req.session.site_admin) {
+			const mySession = await req.db.sequelize.query(`
+				select session.id
+					from session
+				where and session.person = :personId
+			`, {
+				replacements : {
+					personId       : req.session.person
+				},
+				type: req.db.Sequelize.QueryTypes.SELECT
+			});
+
+			if (!mySession) {
+				return res.status(401).json('You do not have access to that session');
+			}
+		}
 
 		if (push_notify != null) {
 			const erasePromise = req.db.session.update(

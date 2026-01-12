@@ -3,6 +3,7 @@ import notify from '../../helpers/blast.js';
 import config from '../../../config/config.js';
 import { errorLogger } from '../../helpers/logger.js';
 
+/*
 export const pushMessage = {
 
 	POST: async (req, res) => {
@@ -14,6 +15,7 @@ export const pushMessage = {
 		res.status(200).json(responseJSON);
 	},
 };
+*/
 
 export const getSubscription = {
 
@@ -81,4 +83,4 @@ export const getSubscription = {
 	},
 };
 
-export default pushMessage;
+export default getSubscription;
