@@ -55,8 +55,9 @@ export const pushSubscribe = {
 			const mySession = await req.db.sequelize.query(`
 				select session.id
 				from session
-				where session.push_notify = :subscriptionId
-				and session.person = :personId
+				where 1=1
+					and session.push_notify = :subscriptionId
+					and session.person = :personId
 			`, {
 				replacements : {
 					subscriptionId : req.params.subscriptionId,
@@ -114,7 +115,8 @@ export const pushSync = {
 			const mySession = await req.db.sequelize.query(`
 				select session.id
 					from session
-				where and session.person = :personId
+				where 1=1
+					and session.person = :personId
 			`, {
 				replacements : {
 					personId       : req.session.person,
