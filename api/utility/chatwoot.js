@@ -24,7 +24,7 @@ export const chatwootSetup = async (tournId = parseInt(process.argv[2])) => {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
-			'api_access_token': process.env.CHATWOOT_TOKEN || config.CHATWOOT.TOKEN,
+			api_access_token: process.env.CHATWOOT_TOKEN || config.CHATWOOT.TOKEN,
 		},
 	};
 
@@ -33,9 +33,9 @@ export const chatwootSetup = async (tournId = parseInt(process.argv[2])) => {
 		locale: 'en',
 		domain: `${tourn[0].webname}.chat.tabroom.com`,
 		support_email: 'support@tabroom.com',
-		status: "active",
+		status: 'active',
 		limits: {},
-		custom_attributes: {}
+		custom_attributes: {},
 	};
 
 	let accountId = null;
