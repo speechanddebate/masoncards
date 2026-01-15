@@ -65,6 +65,7 @@ export const config = {
 		region             : 'us-east-1',
 		Bucket             : 'tabroom-files',
 	},
+	GEMINI_API_KEY: 'xxxxxx',
 	CHATWOOT				: {
 		API_URL		: 'https://chat.tabroom.com/platform/api/v1',
 		TOKEN       : 'xxxxxx',
