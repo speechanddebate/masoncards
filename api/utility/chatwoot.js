@@ -3,7 +3,7 @@ import config from '../../config/config.js';
 import db from '../helpers/litedb.js';
 
 export const chatwootSetup = async (tournId = parseInt(process.argv[2])) => {
-	if (!tournId || isNaN(tournId)) {
+	if (!tournId || Number.isNaN(tournId)) {
 		throw new Error('No tournament ID provided');
 	}
 
