@@ -263,12 +263,15 @@ app.all(tabRoutes, async (req, res, next) => {
 		}
 
 		req.session = await tabAuth(req, res);
+		const subType = req.params.subType;
 
 		if (
-			typeof req.session?.perms !== 'object'
-			|| (!req.session?.perms?.tourn[req.params.tournId])
+			(req.session?.perms?.tourn[req.params.tournId] !== 'tabber')
+			&& (req.session?.perms?.tourn[req.params.tournId] !== 'owner')
+			&& (subType !== 'category' || req.session?.perms?.category[req.params.typeId] !== 'tabber')
+			&& (subType !== 'event' || req.session?.perms?.event[req.params.typeId] !== 'tabber')
 		) {
-			const subType = req.params.subType;
+
 			return res
 				.status(401)
 				.json(`You do not have access to that tournament${subType ? `'s ${subType} functions` : ''}`);

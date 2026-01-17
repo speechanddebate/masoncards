@@ -321,8 +321,8 @@ export const tabAuth = async (req) => {
 		if (
 			perms.tourn[tournId] === 'owner'
 			|| perms.tourn[tournId] === 'tabber'
-			|| req.session.perms.events?.[output.event].tag === 'tabber'
-			|| req.session.perms.categories?.[output.category].tag === 'tabber'
+			|| req.session.perms.event?.[output.event] === 'tabber'
+			|| req.session.perms.category?.[output.category] === 'tabber'
 		) {
 			req.session[subType] = output;
 			return req.session;
@@ -490,7 +490,9 @@ export const tabAuth = async (req) => {
 	}
 
 	if (subType === 'category') {
+
 		const category = await db.summon(db.category, typeId);
+
 		if (category.tourn !== req.session.tourn.id) {
 			delete req.session.tourn;
 			delete req.session.perms;
@@ -500,7 +502,7 @@ export const tabAuth = async (req) => {
 		if (
 			perms.tourn[tournId] === 'owner'
 			|| perms.tourn[tournId] === 'tabber'
-			|| req.session.perms.categories?.[typeId].tag === 'tabber'
+			|| req.session.perms.category?.[typeId] === 'tabber'
 		) {
 			req.session.category = category;
 			return req.session;

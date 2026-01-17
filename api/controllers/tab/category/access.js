@@ -34,7 +34,8 @@ export const changeAccess = {
 		});
 
 		if (!currentPerm) {
-			res.status(400).json(`User ${targetPerson.email} does not have access ${targetCategory.abbr} and so it cannot be altered`);
+			res.status(400).json(`User ${targetPerson.email} does not have access ${targetCategory.abbr},
+				and so it cannot be altered`);
 			return;
 		}
 
@@ -82,6 +83,7 @@ export const changeAccess = {
 
 		if (req.session.perms.tourn[targetCategory.tourn] !== 'owner'
 			&& req.session.perms.tourn[targetCategory.tourn] !== 'tabber'
+			&& req.session.perms.category[targetCategory.id] !== 'tabber'
 		) {
 			res.status(401).json(`You do not have access to change permissions in ${targetCategory.abbr}`);
 			return;
