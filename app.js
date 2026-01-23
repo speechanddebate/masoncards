@@ -255,7 +255,10 @@ const tabRoutes = [
 app.all(tabRoutes, async (req, res, next) => {
 
 	try {
-		// Functions that require tabber or owner permissions to a tournament overall
+
+		// Functions that require tabber or owner permissions to a tournament
+		// overall
+
 		req.session = await auth(req, res);
 
 		if (!req.session) {
@@ -265,11 +268,25 @@ app.all(tabRoutes, async (req, res, next) => {
 		req.session = await tabAuth(req, res);
 		const subType = req.params.subType;
 
+		if (req.params[0] === 'attendance') {
+			if (
+				(req.session?.perms?.tourn[req.params.tournId]
+					&& req.session?.perms?.tourn[req.params.tournId] !== 'limited')
+				|| (req.session?.perms?.event)
+			) {
+				return next();
+			}
+
+			return res
+				.status(401)
+				.json(`You do not have access to that area`);
+		}
+
 		if (
 			(req.session?.perms?.tourn[req.params.tournId] !== 'tabber')
 			&& (req.session?.perms?.tourn[req.params.tournId] !== 'owner')
-			&& (subType !== 'category' || req.session?.perms?.category[req.params.typeId] !== 'tabber')
-			&& (subType !== 'event' || req.session?.perms?.event[req.params.typeId] !== 'tabber')
+			&& (req.session?.perms?.category[req.params.typeId] !== 'tabber')
+			&& (req.session?.perms?.event[req.params.typeId] !== 'tabber')
 		) {
 
 			return res
