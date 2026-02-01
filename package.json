@@ -72,7 +72,7 @@
 		"jsonwebtoken": "^9.0.2",
 		"mariadb": "^2.5.2",
 		"node-fetch": "^3.3.1",
-		"nodemailer": "^6.9.1",
+		"nodemailer": "^7.0.12",
 		"papaparse": "^5.1.0",
 		"sequelize": "^6.21.4",
 		"sha512crypt-node": "^1.0.2",
@@ -86,7 +86,7 @@
 	},
 	"devDependencies": {
 		"@speechanddebate/eslint-config-nsda": "^1.0.26",
-		"@vitest/coverage-v8": "^2.0.5",
+		"@vitest/coverage-v8": "^4.0.17",
 		"chai": "^4.2.0",
 		"eslint": "^8.53.0",
 		"eslint-plugin-import": "^2.25.2",
@@ -103,7 +103,7 @@
 		"svelte": "^4.2.3",
 		"ts-node": "^10.9.1",
 		"typescript": "^5.2.0",
-		"vitest": "^2.0.5"
+		"vitest": "^4.0.17"
 	},
 	"eslintConfig": {
 		"extends": [
