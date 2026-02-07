@@ -17,7 +17,10 @@ export const blastSectionMessage = {
 		const tourn = await req.db.summon(req.db.tourn, req.params.tournId);
 
 		const personIds = await getFollowers(
-			{ sectionId : req.params.sectionId },
+			{
+				sectionId : req.params.sectionId,
+				recipients: req.body.recipients,
+			},
 			req.body
 		);
 
@@ -41,7 +44,7 @@ export const blastSectionMessage = {
 
 		await req.db.changeLog.create({
 			tag         : 'blast',
-			description : `${req.body.message} sent to ${notifyResponse.push?.count || 0} web and ${notifyResponse.email?.count || 0} email recipients `,
+			description : `${req.body.message} sent to ${notifyResponse.push?.count || 0} web and ${notifyResponse.email?.count || 0} email recipients`,
 			person      : req.session.person,
 			count       : notifyResponse.push?.count || 0,
 			panel       : req.params.sectionId,
