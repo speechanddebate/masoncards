@@ -306,17 +306,24 @@ export const increaseLinodeCount = async (whodunnit, countNumber, silent) => {
 	);
 
 	const hostnames = tabwebs.map( (machine) => machine.label );
-	const target = parseInt(countNumber) || 0;
+	let target = parseInt(countNumber) || 0;
 
 	if ((target + tabwebs.length) > (config.TABWEB_CAP || 24))  {
-		return {
-			message: `This process only allows for ${config.TABWEB_CAP || 24} machines to exist at one time.`,
-		};
+		if ( (tabwebs.length) < (config.TABWEB_CAP || 24))  {
+			target = (config.TABWEB_CAP || 24) - tabwebs.length
+		} else {
+			return {
+				message      : `This process only allows for ${config.TABWEB_CAP || 24} machines to exist at one time.`,
+				error        : true,
+				machineLimit : true,
+			};
+		}
 	}
 
 	if (target < 1) {
 		return {
-			message: `No count target sent; nothing done because I cannot make ${target} machines`,
+			message : `No count target sent; nothing done because I cannot make ${target} machines`,
+			error   : true,
 		};
 	}
 
