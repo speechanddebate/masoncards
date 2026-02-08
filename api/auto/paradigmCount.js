@@ -1,5 +1,4 @@
 import db from '../helpers/litedb.js';
-import config from '../../config/config.js';
 
 export const paradigmCount = async () => {
 
@@ -23,11 +22,11 @@ export const paradigmCount = async () => {
 	let limiter = new Date('2020-01-01 00:00:00');
 
 	if (
-		reviewDates['paradigm_review_cutoff']
-		&& reviewDates['paradigm_review_cutoff'] < now
-		&& reviewDates['paradigm_review_start']
+		reviewDates.paradigm_review_cutoff
+		&& reviewDates.paradigm_review_cutoff < now
+		&& reviewDates.paradigm_review_start
 	) {
-		limiter = reviewDates['paradigm_review_start'];
+		limiter = reviewDates.paradigm_review_start;
 	}
 
 	const paradigmCounts = await db.sequelize.query(`
@@ -50,7 +49,7 @@ export const paradigmCount = async () => {
 
 	const countValue = paradigmCounts[0].paradigmCount;
 
-	const reply = await db.sequelize.query(`
+	await db.sequelize.query(`
 		insert into tabroom_setting (id, tag, value	)
 		VALUES(1, "paradigm_count", :countValue)
 		ON DUPLICATE KEY UPDATE value = :countValue, timestamp = current_timestamp
@@ -64,3 +63,5 @@ export const paradigmCount = async () => {
 await paradigmCount();
 db.sequelize.close();
 process.exit();
+
+export default paradigmCount;

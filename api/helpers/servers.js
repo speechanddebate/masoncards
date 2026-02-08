@@ -310,7 +310,7 @@ export const increaseLinodeCount = async (whodunnit, countNumber, silent) => {
 
 	if ((target + tabwebs.length) > (config.TABWEB_CAP || 24))  {
 		if ( (tabwebs.length) < (config.TABWEB_CAP || 24))  {
-			target = (config.TABWEB_CAP || 24) - tabwebs.length
+			target = (config.TABWEB_CAP || 24) - tabwebs.length;
 		} else {
 			return {
 				message      : `This process only allows for ${config.TABWEB_CAP || 24} machines to exist at one time.`,
