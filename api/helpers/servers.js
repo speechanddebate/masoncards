@@ -370,7 +370,6 @@ export const increaseLinodeCount = async (whodunnit, countNumber, silent) => {
 		};
 
 		try {
-
 			const creationReply = axios.post(
 				`${config.LINODE.API_URL}/instances`,
 				machineDefinition,
@@ -386,9 +385,7 @@ export const increaseLinodeCount = async (whodunnit, countNumber, silent) => {
 			promises.push(creationReply);
 
 		} catch (err) {
-
 			errorLogger.error(`Error returned by creation request: ${JSON.stringify(err)} `);
-
 			return {
 				message: `Machine creation ${hostname} failed with response code ${err.response?.status} ${err.response?.statusText} and errors`,
 			};
@@ -434,9 +431,7 @@ export const increaseLinodeCount = async (whodunnit, countNumber, silent) => {
 	if (!silent) {
 		response.emailResponse = await notifyCloudAdmins(whodunnit, resultMessages.join('<br />'), `${target} Machines Added`);
 	}
-
 	return response;
-
 };
 
 export const decreaseLinodeCount = async (whodunnit, countNumber, silent) => {
@@ -448,41 +443,43 @@ export const decreaseLinodeCount = async (whodunnit, countNumber, silent) => {
 	const existingMachines = await getLinodeInstances();
 
 	const tabwebs = existingMachines.filter(
+		// Only tabwebs are part of the scaler
 		machine => machine.tags.includes(config.LINODE.WEBHOST_BASE)
-	);
+	).sort( (a, b) => {
+		// Sort them highest number first
+		if (a.label.length > b.label.length) return 1;
+		if (a.label.length < b.label.length) return -1;
 
-	const hostnames = tabwebs.map( (machine) => machine.label );
-	const target = parseInt(countNumber) || 0;
+		if (a.label > b.label) return 1;
+		if (a.label < b.label) return -1;
+		return 0;
+	});
 
-	let serialNumber = (hostnames.length - target) + 1;
-
-	if (serialNumber < 3) {
-		let reply = `You may only shrink the Tabroom instance footprint to a minimum of 2 machines.`;
-		reply += `Deleting ${target} would leave me with ${hostnames.length - target}.`;
-		return { message: reply };
+	// Find the target, which cannot be lower than the SCALE_MIN (default 2).
+	let target = parseInt(countNumber) || config.LINODE.SCALE_MIN || 2;
+	if ( (tabwebs.length - target) < config.LINODE.SCALE_MIN) {
+		target = tabwebs.length - config.LINODE.SCALE_MIN;
 	}
+	const machineCount = tabwebs.length - target;
+
+	let resultMachineCount = `${whodunnit.name} ${whodunnit.email || 'on the command line'} has DECREASED`;
+	resultMachineCount += `the tabweb cloud server count by ${target} to ${machineCount}:\n`;
 
 	const resultMessages = [
-		`${whodunnit.name} ${whodunnit.email || 'on the command line'} has DECREASED the tabweb cloud server count by ${target}:\n`,
+		resultMachineCount,
 	];
 
 	const destroyMe = [];
 
-	while (hostnames.includes(`${config.LINODE.WEBHOST_BASE}${serialNumber}`)) {
+	while (tabwebs.length > machineCount) {
 
-		const hostname = `${config.LINODE.WEBHOST_BASE}${serialNumber}`;
+		const victim = tabwebs.pop();
 
-		const matches = tabwebs.filter(
-			host => host.label === hostname
-		);
-
-		if (matches) {
-
-			const machine = matches[0];
+		if (victim) {
 
 			try {
 				const deletionReply = await axios.delete(
-					`${config.LINODE.API_URL}/instances/${machine.linode_id}`,
+					`${config.LINODE.API_URL}/instances/${victim.linode_id}`,
 					{
 						headers : {
 							Authorization  : `Bearer ${config.LINODE.API_TOKEN}`,
@@ -494,28 +491,28 @@ export const decreaseLinodeCount = async (whodunnit, countNumber, silent) => {
 
 				if (parseInt(deletionReply.status) === 200) {
 					resultMessages.push('');
-					resultMessages.push(`Machine ${hostname} deletion request successful.<br />`);
-					resultMessages.push(`Linode ID ${machine.linode_id}. UUID ${machine.uuid} terminating<br />`);
+					resultMessages.push(`Machine ${victim.label} deletion request successful.<br />`);
+					resultMessages.push(`Linode ID ${victim.linode_id}. UUID ${victim.uuid} terminating<br />`);
 					resultMessages.push(`${JSON.stringify(deletionReply.data)} <br />`);
 
-					destroyMe.push(hostname);
+					destroyMe.push(victim.label);
 
 					await db.sequelize.query(`delete from server where linode_id = :linodeId`,
 						{
-							replacements: { linodeId: machine.linode_id },
+							replacements: { linodeId: victim.linode_id },
 							type: db.sequelize.QueryTypes.DELETE,
 						}
 					);
 				}
 
 			} catch (err) {
+				let message = `Deleting ${victim.label} failed with response code `;
+				message += `${err.response.status} ${err.response.statusText} `;
+				message += `and errors ${err.response?.data?.errors}`;
 
-				return {
-					message: `Deleting ${hostname} failed with response code ${err.response.status} ${err.response.statusText} and errors ${err.response?.data?.errors}`,
-				};
+				return message;
 			}
 		}
-		serialNumber++;
 	}
 
 	await db.changeLog.create({
@@ -747,9 +744,6 @@ export const getProxyStatus = async(existingMachines) => {
 					checkCode   : parsedProxyData[masonId]?.check_code,
 					downtime    : parsedProxyData[masonId]?.downtime || 0,
 				};
-
-				console.log(`machine status for ${tick} is `);
-				console.log(machineStatus);
 			}
 		}
 
