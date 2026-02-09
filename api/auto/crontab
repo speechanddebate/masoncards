@@ -30,3 +30,6 @@ TZ=UTC
 # NAUDL post to Salesforce
 15 3 * * * cd /masoncards && /usr/local/bin/node /masoncards/api/auto/naudl/chapters.js >> /var/log/cron.log 2>&1
 25 3 * * * cd /masoncards && /usr/local/bin/node /masoncards/api/auto/naudl/students.js >> /var/log/cron.log 2>&1
+
+# Paradigm counter to prevent the database lock
+15 5 * * * cd /masoncards && /usr/local/bin/node /masoncards/api/auto/paradigmCount.js >> /var/log/cron.log 2>&1
