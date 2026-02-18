@@ -6,14 +6,16 @@ import { futureTourns, thisWeek } from '../../../controllers/public/invite/tourn
 import { searchTourns, searchCircuitTourns } from '../../../controllers/public/search.js';
 import { getAds } from '../../../controllers/public/ads.js';
 
+// Disabled most of this because some AI bot from hell hit it this weekend and well, no.
+
 export default [
-	{ path: '/public/invite/{webname}'                              , module : getInvite }           ,
-	{ path: '/public/invite/tourn/{tourn_id}'                       , module : getInvite }           ,
-	{ path: '/public/invite/round/{round_id}'                       , module : getRounds }           ,
-	{ path: '/public/invite/upcoming'                               , module : futureTourns }        ,
-	{ path: '/public/invite/upcoming/:circuit'                      , module : futureTourns }        ,
-	{ path: '/public/invite/thisweek'                               , module : thisWeek }            ,
-	{ path: '/public/search/:time/:searchString/circuit/:circuitId' , module : searchCircuitTourns } ,
-	{ path: '/public/search/:time/:searchString'                    , module : searchTourns }        ,
+//	{ path: '/public/invite/{webname}'                              , module : getInvite }           ,
+//	{ path: '/public/invite/tourn/{tourn_id}'                       , module : getInvite }           ,
+//	{ path: '/public/invite/round/{round_id}'                       , module : getRounds }           ,
+//	{ path: '/public/invite/upcoming'                               , module : futureTourns }        ,
+//	{ path: '/public/invite/upcoming/:circuit'                      , module : futureTourns }        ,
+//	{ path: '/public/invite/thisweek'                               , module : thisWeek }            ,
+//	{ path: '/public/search/:time/:searchString/circuit/:circuitId' , module : searchCircuitTourns } ,
+//	{ path: '/public/search/:time/:searchString'                    , module : searchTourns }        ,
 	{ path: '/public/ads'                                           , module : getAds }              ,
 ];
