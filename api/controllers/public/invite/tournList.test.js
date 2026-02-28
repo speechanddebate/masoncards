@@ -16,7 +16,6 @@ describe('Tournament Front Listing', () => {
 			.expect(200);
 
 		const body = res.body;
-
 		assert.typeOf(body, 'array', 'Array returned');
 		assert.typeOf(body[0], 'object', 'Array contains objects');
 

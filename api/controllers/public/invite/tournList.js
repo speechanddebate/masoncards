@@ -67,11 +67,16 @@ export const futureTourns = {
 		let limit = '';
 		let timeScope = ' DATE(NOW() - INTERVAL 2 DAY)';
 
-		if (req.config.MODE === 'test') {
+		let scopeLimit = 'limit 512';
+
+		if (process.env.NODE_ENV === 'test') {
 			// the nine test suite tournaments are forever in the past.  This one
 			// excludes Nationals but not the other eight others.
 			timeScope = `'2023-08-01 00:00:00'`;
+			scopeLimit = '';
 		}
+
+		console.log(req.config.MODE);
 
 		if (typeof req.params.circuit === 'number') {
 			limit = ` and exists (
@@ -85,8 +90,6 @@ export const futureTourns = {
 		if (typeof req.query.state === 'string' && req.query.state.length === 2) {
 			limit = ` and tourn.state = '${req.query.state.toUpperCase()}'`;
 		}
-
-		const scopeLimit = 'limit 512';
 
 		const [future] = await db.sequelize.query(`
 			select tourn.id, tourn.webname, tourn.name, tourn.tz,
