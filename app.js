@@ -287,8 +287,8 @@ app.all(tabRoutes, async (req, res, next) => {
 			&& (req.session?.perms?.tourn[req.params.tournId] !== 'owner')
 			&& (req.session?.perms?.category[req.params.typeId] !== 'tabber')
 			&& (req.session?.perms?.event[req.params.typeId] !== 'tabber')
+			&& (req.params.typeId && parseInt(req.session[subType]?.id) !== parseInt(req.params.typeId))
 		) {
-
 			return res
 				.status(401)
 				.json(`You do not have access to that tournament${subType ? `'s ${subType} functions` : ''}`);

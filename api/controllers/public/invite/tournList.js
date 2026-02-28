@@ -86,6 +86,8 @@ export const futureTourns = {
 			limit = ` and tourn.state = '${req.query.state.toUpperCase()}'`;
 		}
 
+		const scopeLimit = 'limit 512';
+
 		const [future] = await db.sequelize.query(`
 			select tourn.id, tourn.webname, tourn.name, tourn.tz,
 				tourn.city as location, tourn.state, tourn.country,
@@ -179,6 +181,7 @@ export const futureTourns = {
 			)
 			group by tourn.id
 			order by tourn.end, schoolcount DESC
+			${scopeLimit}
 		`);
 
 		const [futureDistricts] = await db.sequelize.query(`
@@ -259,6 +262,8 @@ export const futureTourns = {
 
 			group by weekend.id
 			order by weekend.start
+
+			${scopeLimit}
 		`);
 
 		future.push(...futureDistricts);
@@ -310,8 +315,8 @@ export const pastTourns = {
 
 		const db = req.db;
 		let limit = '';
-
 		let timeScope = ' DATE(NOW() - INTERVAL 2 DAY)';
+		const scopeLimit = 'limit 512';
 
 		if (req.config.MODE === 'test') {
 			// the nine test suite tournaments are forever in the past.  This one
@@ -424,7 +429,8 @@ export const pastTourns = {
 				where weekend.tourn = tourn.id
 			)
 			group by tourn.id
-			order by tourn.end, schoolcount DESC
+			order by tourn.end DESC, schoolcount DESC
+			limit 512
 		`);
 
 		const [pastDistricts] = await db.sequelize.query(`
@@ -504,7 +510,8 @@ export const pastTourns = {
 			and weekend.tourn = tourn.id
 
 			group by weekend.id
-			order by weekend.start
+			order by weekend.start DESC
+			limit 128
 		`);
 
 		past.push(...pastDistricts);
