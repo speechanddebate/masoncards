@@ -259,10 +259,8 @@ export const futureTourns = {
 			where tourn.hidden = 0
 			and weekend.end > ${timeScope}
 			and weekend.tourn = tourn.id
-
 			group by weekend.id
 			order by weekend.start
-
 			${scopeLimit}
 		`);
 
@@ -430,7 +428,7 @@ export const pastTourns = {
 			)
 			group by tourn.id
 			order by tourn.end DESC, schoolcount DESC
-			limit 512
+			${scopeLimit}
 		`);
 
 		const [pastDistricts] = await db.sequelize.query(`
@@ -525,10 +523,7 @@ export const pastTourns = {
 				|| b - a;
 		});
 
-		if (past.length > 512) {
-			past.length = 512;
-		}
-
+		if (past.length > 512) past.length = 512;
 		return res.status(200).json(past);
 	},
 };
