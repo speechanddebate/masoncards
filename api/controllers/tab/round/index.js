@@ -270,6 +270,7 @@ export const roundDecisionStatus = {
 					if (ballot.winner) {
 						judge.text = label[ballot.side];
 						judge.class = 'greentext semibold';
+						judge.title = 'Winner entered';
 					}
 				} else if (
 					eventType !== 'speech'
@@ -278,17 +279,18 @@ export const roundDecisionStatus = {
 				) {
 					judge.text = 'BYE';
 					judge.class = 'graytext semibold';
+					judge.title = 'Bye entered';
 				} else if (
 					eventType !== 'speech'
 					&& eventType !== 'congress'
 					&& ballot.bye
 				) {
 					if (!done[ballot.ballot]) {
-						if (judge.text) {
-							judge.text += `/`;
-						}
+						if (judge.text) judge.text += `/`;
 						round.panels[ballot.panel] = 10000;
 						judge.text += `Bye`;
+						if (judge.title) judge.title += `/`;
+						judge.title += 'Bye entered';
 						done[ballot.ballot] = true;
 					}
 					judge.class = 'graytext semibold';
@@ -298,18 +300,25 @@ export const roundDecisionStatus = {
 					&& ballot.forfeit
 				) {
 					if (!done[ballot.ballot]) {
-						if (judge.text) {
-							judge.text += `/`;
-						}
+						if (judge.text) judge.text += `/`;
 						judge.text += `Fft`;
+						if (judge.title) judge.title += `/`;
+						judge.title += 'Bye entered';
 						done[ballot.ballot] = true;
 					}
 					judge.class = 'graytext semibold';
+					judge.title = 'Forfeit entered';
 				} else if (ballot.rank) {
 					judge.text = 'in';
 					judge.class = 'greentext semibold';
+					judge.title = 'Ranks entered';
 				} else if (ballot.chair) {
 					judge.class = 'fa fa-sm fa-star greentext';
+					judge.title = 'Non-voting chair ballot without scores';
+				} else {
+					judge.class = 'graytext italic';
+					judge.text  = 'ns';
+					judge.title = 'Ballot confirmed without scores';
 				}
 
 			} else if (
