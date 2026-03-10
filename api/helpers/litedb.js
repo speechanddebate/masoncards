@@ -42,7 +42,6 @@ export const massUpdate = async (updateQuery, rawIds, key = 'id') => {
 	const promises = [];
 
 	allArrays.forEach( (keys) => {
-		console.log(`Updater has ${keys.length} keys to update ${JSON.stringify(keys)}`);
 		const updatePromise = db.sequelize.query(
 			updateQuery,
 			{

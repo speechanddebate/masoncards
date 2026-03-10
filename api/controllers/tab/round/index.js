@@ -151,15 +151,16 @@ export const roundDecisionStatus = {
 				ballot.audit,
 				ballot.side,
 				ballot.bye, ballot.forfeit, panel.bye pbye,
-				rank.id rank,
-				point.id point,
+				rank.value rank,
+				point.value point,
 				winloss.id winloss,
 				winloss.value winner,
 				rubric.id rubric_id,
 				panel.flight,
-				rubric.content rubric
+				rubric.content rubric,
+				entry.code entryCode
 
-			from (ballot, panel, round, event, tourn)
+			from (ballot, panel, round, event, tourn, entry)
 
 				left join judge on ballot.judge           = judge.id
 				left join score rank on rank.ballot       = ballot.id and rank.tag    = 'rank'
@@ -172,6 +173,8 @@ export const roundDecisionStatus = {
 				and panel.id = ballot.panel
 				and round.event = event.id
 				and event.tourn = tourn.id
+				and ballot.entry = entry.id
+				and entry.active =1
 			order by ballot.side
 		`, {
 			replacements: { roundId: req.params.roundId },
@@ -308,7 +311,7 @@ export const roundDecisionStatus = {
 					}
 					judge.class = 'graytext semibold';
 					judge.title = 'Forfeit entered';
-				} else if (ballot.rank) {
+				} else if (ballot.rank || ballot.point) {
 					judge.text = 'in';
 					judge.class = 'greentext semibold';
 					judge.title = 'Ranks entered';

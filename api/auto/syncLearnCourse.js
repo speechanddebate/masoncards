@@ -21,10 +21,6 @@ const syncAllLearn = async () => {
 	});
 
 	await Promise.all(promises);
-
-	promises.forEach( (promise) => {
-		console.log(promise);
-	});
 	console.log(`${courses.length} courses synchronized `);
 };
 

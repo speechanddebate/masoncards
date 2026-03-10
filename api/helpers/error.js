@@ -41,8 +41,6 @@ export const errorHandler = (err, req, res, next) => {
 		|| req.originalUrl === '/v1/glp/mailtest/error'
 	) {
 
-		console.log('Sending mail');
-
 		const messageData = {
 			from    : 'error-handler@tabroom.com',
 			email   : config.ERROR_DESTINATION,
