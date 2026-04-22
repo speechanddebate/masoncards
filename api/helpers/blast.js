@@ -273,26 +273,20 @@ export const inboxMessage = async (inputData) => {
 	const message = {
 		body          : inputData.html || inputData.text,
 		subject       : inputData.subject,
-		sender        : inputData.sender,
 		sender_string : inputData.replyTo || inputData.from,
 		url           : inputData.url,
-		email         : inputData.emailId,
 	};
 
 	// Tourn must exist, or otherwise be null
-	if (inputData.tourn) {
-		message.tourn = inputData.tourn;
-	}
-
-	if (message.email && !inputData.append) {
-		delete message.body;
-	}
+	if (inputData.tourn) message.tourn = inputData.tourn;
+	if (inputData.sender) message.sender = inputData.sender;
+	if (inputData.emailId) message.email = inputData.emailId;
+	if (message.email && !inputData.append) delete message.body;
 
 	const responses = [];
 	const errors = [];
 
 	inputData.ids.forEach( async (id) => {
-
 		try {
 			const response = db.message.create({
 				person: id,
