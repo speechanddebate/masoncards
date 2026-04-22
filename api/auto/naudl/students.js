@@ -253,7 +253,7 @@ const syncNAUDLChapterRoster = async (chapterId, naudlId) => {
 	});
 
 	if (createSettings.length > 0) {
-		const reply = await db.studentSetting.bulkCreate(createSettings);
+		await db.studentSetting.bulkCreate(createSettings);
 	}
 
 	return studentsById;

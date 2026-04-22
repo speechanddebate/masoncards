@@ -175,7 +175,6 @@ export const saveEventResult = async (db, eventId) => {
 			generated : new Date(),
 		});
 
-
 		// Get final results set for the rankings
 
 		const finalResultQuery = `
