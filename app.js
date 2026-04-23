@@ -256,9 +256,7 @@ app.all(tabRoutes, async (req, res, next) => {
 
 	try {
 
-		// Functions that require tabber or owner permissions to a tournament
-		// overall
-
+		// Functions that require tabber or owner permissions to a tournament overall
 		req.session = await auth(req, res);
 
 		if (!req.session) {
@@ -268,7 +266,9 @@ app.all(tabRoutes, async (req, res, next) => {
 		req.session = await tabAuth(req, res);
 		const subType = req.params.subType;
 
-		if (req.params[0] === 'attendance') {
+		if (
+			['attendance', 'dashboard'].includes(req.params[0])
+		) {
 			if (
 				(req.session?.perms?.tourn[req.params.tournId]
 					&& req.session?.perms?.tourn[req.params.tournId] !== 'limited')
