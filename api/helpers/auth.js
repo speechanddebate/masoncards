@@ -395,9 +395,6 @@ export const tabAuth = async (req) => {
 			type: db.sequelize.QueryTypes.SELECT,
 		});
 
-		console.log('Outputs');
-		console.log(JSON.stringify(outputs,  null, 2));
-
 		if (!outputs || !outputs.length > 0) {
 			delete req.session.tourn;
 			delete req.session.perms;
