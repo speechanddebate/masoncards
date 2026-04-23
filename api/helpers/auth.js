@@ -354,10 +354,6 @@ export const tabAuth = async (req) => {
 					}
 				}
 
-				if (replacements.eventIds.length === 0) {
-					return 'You do not have access to that timeslot through your event level permissions';
-				}
-
 				queryLimiter = `
 					and exists (
 						select round.id
@@ -366,6 +362,20 @@ export const tabAuth = async (req) => {
 							and round.event IN (:eventIds)
 					)
 				`;
+
+				if (req.params[0] === 'attendance') {
+					if (perms.tourn[tournId] === 'checker') {
+						queryLimiter = '';
+					} else {
+						for (const eventId of Object.keys(req.session.perms.event)) {
+							if (req.session.perms.event[eventId] === 'checker') {
+								replacements.eventIds.push(eventId);
+							}
+						}
+					}
+				} else if (replacements.eventIds.length === 0) {
+					return 'You do not have access to that timeslot through your event level permissions';
+				}
 			}
 		}
 
@@ -384,6 +394,9 @@ export const tabAuth = async (req) => {
 			replacements,
 			type: db.sequelize.QueryTypes.SELECT,
 		});
+
+		console.log('Outputs');
+		console.log(JSON.stringify(outputs,  null, 2));
 
 		if (!outputs || !outputs.length > 0) {
 			delete req.session.tourn;

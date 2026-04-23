@@ -258,17 +258,16 @@ app.all(tabRoutes, async (req, res, next) => {
 
 		// Functions that require tabber or owner permissions to a tournament overall
 		req.session = await auth(req, res);
-
-		if (!req.session) {
-			return res.status(401).json('Tab: You are not logged in');
-		}
+		if (!req.session) return res.status(401).json('Tab: You are not logged in');
 
 		req.session = await tabAuth(req, res);
 		const subType = req.params.subType;
 
 		if (
 			['attendance', 'dashboard'].includes(req.params[0])
+			|| req.params.typeId === 'dashboard'
 		) {
+
 			if (
 				(req.session?.perms?.tourn[req.params.tournId]
 					&& req.session?.perms?.tourn[req.params.tournId] !== 'limited')
