@@ -67,7 +67,6 @@
 		"html-to-text": "^9.0.5",
 		"human-readable-ids": "^1.0.4",
 		"inotify": "github:c4milo/node-inotify",
-		"isomorphic-fetch": "^3.0.0",
 		"jsforce": "^3.6.2",
 		"jsonwebtoken": "^9.0.2",
 		"mariadb": "^2.5.2",
