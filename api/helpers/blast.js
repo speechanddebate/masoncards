@@ -279,7 +279,7 @@ export const inboxMessage = async (inputData) => {
 
 	// Tourn must exist, or otherwise be null
 	if (inputData.tourn) message.tourn = inputData.tourn;
-	if (inputData.sender) message.sender = inputData.sender;
+	if (inputData.sender > 0) message.sender = inputData.sender;
 	if (inputData.emailId) message.email = inputData.emailId;
 	if (message.email && !inputData.append) delete message.body;
 
