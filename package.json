@@ -98,6 +98,7 @@
 		"nodemon": "^3.1.7",
 		"nyc": "^14.0.0",
 		"supertest": "^4.0.2",
+		"svelte": "^5.55.5",
 		"ts-node": "^10.9.1",
 		"typescript": "^5.2.0",
 		"vitest": "^4.0.17"
