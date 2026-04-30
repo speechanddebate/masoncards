@@ -73,7 +73,10 @@ export const syncLearnResults = async (person) => {
 		select nsda_id.value nsda_id,
 			nsda_email.value nsda_email
 		from person
-			left join person_setting nsda_email on nsda_email.person = person.id and nsda_email.tag = 'nsda_email'
+			left join person_setting nsda_email
+				on nsda_email.person = person.id
+				and nsda_email.tag = 'nsda_email'
+				and nsda_email.value !== ''
 			left join person_setting nsda_id on nsda_id.person = person.id and nsda_id.tag = 'nsda_id'
 		where 1=1
 			and person.id = :personId
@@ -225,8 +228,8 @@ export const syncLearnByCourse = async (quiz) => {
 		if (
 			existing
 			&& (person.email === existing.email || person.email === existing.nsda_email)
-			&& parseInt(person.nsda) !== parseInt(existing.person_id)
-			&& parseInt(person.nsda_id) !== parseInt(existing.person_id)
+			&& person.nsda && parseInt(person.nsda) !== parseInt(existing.person_id)
+			&& person.nsda_id && parseInt(person.nsda_id) !== parseInt(existing.person_id)
 		) {
 
 			if (person.nsda) {
@@ -234,13 +237,17 @@ export const syncLearnByCourse = async (quiz) => {
 				const tabroomPerson = await getNSDA(`/members/${person.nsda}`);
 				const nsdaPerson = await getNSDA(`/members/${existing.person_id}`);
 
-				logs.push(`${now}: NSDA ID Mismatch: Same email ${existing.email}. Tabroom NSDA: ${person.nsda} Second ${person.nsda_id} and NSDA ID: ${existing.person_id}`);
+				logs.push(`${now}: NSDA ID Mismatch: Same email ${existing.email}.
+					Tabroom NSDA: ${person.nsda}
+					Second ${person.nsda_id}
+					and NSDA ID: ${existing.person_id}`);
 
 				if (!tabroomPerson) {
 
 					if (nsdaPerson.last === person.last || nsdaPerson.first === person.first) {
 
-						logs.push(`${now}: NSDA ID ${person.nsda} is invalid. Name match so switching to valid NSDA ID ${nsdaPerson.person_id}`);
+						logs.push(`${now}: NSDA ID ${person.nsda} is invalid.
+							Name match so switching to valid NSDA ID ${nsdaPerson.person_id}`);
 
 						swapNSDA(
 							person.id,
@@ -387,9 +394,7 @@ export const syncLearnByCourse = async (quiz) => {
 
 	await db.personSetting.bulkCreate(
 		altSettings,
-		{
-			ignoreDuplicates: true,
-		}
+		{ ignoreDuplicates: true }
 	);
 
 	await Promise.all(allPromises);
@@ -445,10 +450,7 @@ export const syncLearnByCourse = async (quiz) => {
 		for (const person of notExisting) {
 
 			let courseUser = usersByNsdaId[person.nsda];
-
-			if (!courseUser && person.nsda_id) {
-				courseUser = usersByNsdaId[person.nsda_id];
-			}
+			if (!courseUser && person.nsda_id) courseUser = usersByNsdaId[person.nsda_id];
 
 			if (courseUser && courseUser.completed) {
 
@@ -499,6 +501,7 @@ export const syncLearnByCourse = async (quiz) => {
 						from person_setting ps
 						where ps.person = person.id
 						and ps.tag='nsda_email'
+						and ps.value != ''
 						and ps.value IN (:userEmails)
 					)
 				)
@@ -517,6 +520,7 @@ export const syncLearnByCourse = async (quiz) => {
 						from person_setting ps
 						where ps.person = person.id
 						and ps.tag='nsda_email'
+						and ps.value != ''
 						and ps.value IN (:userEmails)
 					)
 				)
