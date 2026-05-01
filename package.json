@@ -99,6 +99,9 @@
 		"nyc": "^14.0.0",
 		"supertest": "^4.0.2",
 		"svelte": "^5.55.5",
+		"@sveltejs/kit": "^2.22.0",
+		"@sveltejs/vite-plugin-svelte": "^6.2.1",
+		"@types/node": "^24.9.1",
 		"ts-node": "^10.9.1",
 		"typescript": "^5.2.0",
 		"vitest": "^4.0.17"
