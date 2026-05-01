@@ -11,7 +11,7 @@ describe('Person History', () => {
 
 		// Victim of the day!
 		const res = await request(server)
-			.get(`/v1/ext/nsda/history?nsda_id=123456`)
+			.get(`/v1/ext/nsda/history?nsda_id=4`)
 			.set('Accept', 'application/json')
 			.set('Authorization', `Basic ${authHeader}`)
 			.expect('Content-Type', /json/)
@@ -22,7 +22,7 @@ describe('Person History', () => {
 		assert.property(res.body, 'student', 'Response has student property');
 		assert.property(res.body, 'judge', 'Response has judge property');
 		assert.property(res.body, 'quizzes', 'Response has quizzes property');
-		assert.equal(res.body.personId, '123215', 'Returned the proper NSDA ID for the end user');
+		assert.equal(res.body.personId, '1', 'Returned the proper NSDA ID for the end user');
 
 	}, 30000);
 
