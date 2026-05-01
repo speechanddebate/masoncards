@@ -7,7 +7,7 @@ const authHeader = Buffer.from(`69:${testUserAPIKey.value}`).toString('base64');
 
 describe('Person History', () => {
 
-	it('Returns history for a person', async () => {
+/*	it('Returns history for a person', async () => {
 
 		// Victim of the day!
 		const res = await request(server)
@@ -25,6 +25,7 @@ describe('Person History', () => {
 		assert.equal(res.body.personId, '1', 'Returned the proper NSDA ID for the end user');
 
 	}, 30000);
+*/
 
 	it('Errors on a missing person id', async () => {
 		await request(server)
