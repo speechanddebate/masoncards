@@ -76,14 +76,14 @@ export const syncLearnResults = async (person) => {
 					from person_setting nsda_id
 					where nsda_id.person = person.id
 					and nsda_id.tag = 'nsda_id'
-					and nsda_id.value !== ''
+					and nsda_id.value != ''
 			) nsda_id,
 			(
 				select nsda_email.value
 					from person_setting nsda_email
 					where nsda_email.person = person.id
 					and nsda_email.tag = 'nsda_email'
-					and nsda_email.value !== ''
+					and nsda_email.value != ''
 			) nsda_email
 
 		from (person)
