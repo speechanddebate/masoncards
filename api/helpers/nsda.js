@@ -70,14 +70,23 @@ export const syncLearnResults = async (person) => {
 	}
 
 	const nsdaIdentities = await db.sequelize.query(`
-		select nsda_id.value nsda_id,
-			nsda_email.value nsda_email
-		from person
-			left join person_setting nsda_email
-				on nsda_email.person = person.id
-				and nsda_email.tag = 'nsda_email'
-				and nsda_email.value !== ''
-			left join person_setting nsda_id on nsda_id.person = person.id and nsda_id.tag = 'nsda_id'
+		select person.id,
+			(
+				select nsda_id.value
+					from person_setting nsda_id
+					where nsda_id.person = person.id
+					and nsda_id.tag = 'nsda_id'
+					and nsda_id.value !== ''
+			) nsda_id,
+			(
+				select nsda_email.value
+					from person_setting nsda_email
+					where nsda_email.person = person.id
+					and nsda_email.tag = 'nsda_email'
+					and nsda_email.value !== ''
+			) nsda_email
+
+		from (person)
 		where 1=1
 			and person.id = :personId
 	`, {
