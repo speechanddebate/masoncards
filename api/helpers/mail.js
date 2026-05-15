@@ -80,7 +80,6 @@ export const emailBlast = async (inputData) => {
 	messageData.bcc = Array.from(new Set(messageData.email));
 	messageData.to = messageData.to || config.MAIL_FROM;
 	messageData.from = messageData.from || config.MAIL_FROM;
-	messageData.replyTo = messageData.replyTo || messageData.from;
 	messageData.subject = messageData.subject || 'Message from Tab';
 	messageData.subject = `[TAB] ${messageData.subject}`;
 
