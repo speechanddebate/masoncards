@@ -36,8 +36,8 @@ describe('User Profile Loader', () => {
 
 		assert.equal(
 			res.body.email,
-			'f0ded917',
-			'f0ded917 is user number 1'
+			'4fddeb03',
+			'4fddeb03 is user number 1'
 		);
 	});
 });
