@@ -2,6 +2,7 @@
 import moment from 'moment-timezone';
 import { getFollowers, getPairingFollowers } from '../../../helpers/followers.js';
 import { notify } from '../../../helpers/blast.js';
+import { shareRooms } from  '../../tab/round/share.js';
 import { sendPairingBlast, formatPairingBlast } from '../../../helpers/pairing.js';
 
 export const blastRoundMessage = {
@@ -233,8 +234,9 @@ export const blastRoundPairing = {
 			});
 
 			const flip = scheduleAutoFlip(roundId, req);
+			const sharedCounter = shareRooms(roundId);
 
-			promises = [flip, log, publish];
+			promises = [flip, log, publish, sharedCounter];
 		}
 
 		const rmBlasted = req.db.sequelize.query(
