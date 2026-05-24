@@ -2,7 +2,7 @@ import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import rateLimiter from 'express-rate-limit';
-import pkg from 'uuid';
+import { v4 as uuid } from 'uuid';
 import expressWinston from 'express-winston';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
@@ -33,7 +33,6 @@ import db from './api/helpers/db.js';
 
 import { debugLogger, requestLogger, errorLogger } from './api/helpers/logger.js';
 
-const { v4: uuid } = pkg;
 const app = express();
 
 // Startup log message
