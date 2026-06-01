@@ -114,6 +114,7 @@ db.circuit.belongsToMany(db.person,  {
 db.circuit.belongsToMany(db.chapter, { as: 'Chapters', foreignKey: 'circuit', through: 'chapter_circuit' });
 
 db.circuit.hasMany(db.file       , { as: 'Files'       , foreignKey: 'circuit' });
+db.circuit.hasMany(db.resultSet  , { as: 'ResultSets'  , foreignKey: 'circuit' });
 db.circuit.hasMany(db.permission , { as: 'Permissions' , foreignKey: 'circuit' });
 
 db.coach.belongsTo(db.entry   , { as: 'Entry'   , foreignKey: 'entry' });
@@ -557,12 +558,12 @@ db.result.hasMany(db.resultValue , { as: 'ResultValues' , foreignKey: 'result' }
 
 db.resultKey.belongsTo(db.resultSet , { as: 'ResultKey' , foreignKey: 'result_set' });
 
-db.resultSet.hasMany(db.result          , { as: 'Result'        , foreignKey: 'result_set' });
-db.resultSet.belongsTo(db.tourn         , { as: 'Tourn'         , foreignKey: 'tourn' });
-db.resultSet.belongsTo(db.event         , { as: 'Event'         , foreignKey: 'event' });
-db.resultSet.belongsTo(db.circuit       , { as: 'Circuit'       , foreignKey: 'circuit' });
-db.resultSet.belongsTo(db.sweepProtocol , { as: 'SweepProtocol' , foreignKey: 'sweep_set' });
-db.resultSet.belongsTo(db.sweepAward    , { as: 'SweepAward'    , foreignKey: 'sweep_award' });
+db.resultSet.hasMany(db.result          , { as : 'Result'        , foreignKey: 'result_set' });
+db.resultSet.belongsTo(db.tourn         , { as : 'Tourn'         , foreignKey: 'tourn' });
+db.resultSet.belongsTo(db.circuit       , { as : 'Circuit'       , foreignKey: 'circuit' });
+db.resultSet.belongsTo(db.event         , { as : 'Event'         , foreignKey: 'event' });
+db.resultSet.belongsTo(db.sweepProtocol , { as : 'SweepProtocol' , foreignKey: 'sweep_set' });
+db.resultSet.belongsTo(db.sweepAward    , { as : 'SweepAward'    , foreignKey: 'sweep_award' });
 
 db.resultValue.belongsTo(db.result    , { as: 'Result'    , foreignKey: 'result' });
 db.resultValue.belongsTo(db.resultKey , { as: 'ResultKey' , foreignKey: 'result_key' });

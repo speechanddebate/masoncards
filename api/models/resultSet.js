@@ -1,7 +1,12 @@
 const resultSet = (sequelize, DataTypes) => {
 	return sequelize.define('resultSet', {
 		tag : {
-			type         : DataTypes.ENUM('entry', 'student', 'chapter'),
+			type         : DataTypes.ENUM('final','bracket','seed','speaker','qualifier','sweep','cume','nsda','table','chamber','scores','circuit','other'),
+			allowNull    : false,
+			defaultValue : 'entry',
+		},
+		entity : {
+			type         : DataTypes.ENUM('entry', 'student', 'school'),
 			allowNull    : false,
 			defaultValue : 'entry',
 		},

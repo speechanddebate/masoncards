@@ -1,6 +1,5 @@
 // Functions to establish access parameters
 import getNSDA from '../../../helpers/nsda.js';
-import { multiObjectify } from '../../../helpers/objectify.js';
 
 export const syncNatsAppearances = {
 
@@ -8,9 +7,9 @@ export const syncNatsAppearances = {
 
 		const chapterNats = await getNSDA('/reports/nats-appearances');
 
-		const existingChapters = multiObjectify(await req.db.sequelize.query(`
-			select chapter.id chapter, chapter.nsda id, cs.id csid, cs.value
-			from chapter
+		const existingChapters = await req.db.sequelize.query(`
+			select chapter.id chapter, chapter.name, chapter.nsda id, cs.id csid, cs.value
+			from (chapter)
 				left join chapter_setting cs
 					on cs.chapter = chapter.id
 					and cs.tag = 'nats_appearances'
@@ -18,10 +17,17 @@ export const syncNatsAppearances = {
 			order by chapter.id, chapter.nsda
 		`, {
 			type : req.db.sequelize.QueryTypes.SELECT,
-		}));
+		});
+
+		const chaptersById = {};
+		existingChapters.forEach( (chapter) => {
+			if (!chaptersById[chapter.id]) chaptersById[chapter.id] = [];
+			chaptersById[chapter.id].push(chapter);
+		});
 
 		const updateChapter = `update chapter_setting set value = :value where id = :csid`;
 		const createChapter = `insert into chapter_setting (tag, chapter, value) VALUES ('nats_appearances', :chapter, :value)`;
+		const deleteCS = `delete from chapter_setting where tag="nats_appearances" and chapter = :chapter`;
 
 		const counters = {
 			chapters : 0,
@@ -31,24 +37,43 @@ export const syncNatsAppearances = {
 		// Use the for/of structure so it returns before the report can be
 		// issued for success/failure.
 
-		for await (const chapter of chapterNats.data) {
-			if (existingChapters[chapter.school_id]) {
-				for await (const existing of existingChapters[chapter.school_id]) {
-					if (existing.csid) {
-						if (parseInt(existing.value) !== parseInt(chapter.Appearances)) {
-							await req.db.sequelize.query(
-								updateChapter, {
-									replacements : {
-										value    : chapter.Appearances,
-										csid     : existing.csid,
-									},
-									type : req.db.sequelize.QueryTypes.UPDATE,
-								}
-							);
-							counters.chapters++;
-						}
-					} else {
-						await req.db.sequelize.query(
+		const promises = [];
+
+		chapterNats.data.forEach( (chapter) => {
+			if (chaptersById[chapter.school_id]) {
+				chaptersById[chapter.school_id].forEach( (existing) => {
+
+					if (existing.csid && chapter.Appearances < 1) {
+
+						const promise = req.db.sequelize.query(
+							deleteCS, {
+								replacements : {
+									chapter : existing.chapter,
+								},
+								type : req.db.sequelize.QueryTypes.DELETE,
+							}
+						);
+
+						promises.push(promise);
+
+					} else if (existing.csid && parseInt(existing.value) !== parseInt(chapter.Appearances)) {
+
+						const promise = req.db.sequelize.query(
+							updateChapter, {
+								replacements : {
+									value    : chapter.Appearances,
+									csid     : existing.csid,
+								},
+								type : req.db.sequelize.QueryTypes.UPDATE,
+							}
+						);
+
+						promises.push(promise);
+						counters.chapters++;
+
+					} else if (!existing.csid) {
+
+						const promise = req.db.sequelize.query(
 							createChapter, {
 								replacements : {
 									value    : chapter.Appearances,
@@ -58,13 +83,15 @@ export const syncNatsAppearances = {
 							}
 						);
 						counters.chapters++;
+						promises.push(promise);
 					}
-				}
+				});
 			}
-		}
+		});
 
 		const studentNats = await getNSDA('/reports/member-nats-appearances');
-		const existingStudents = multiObjectify(await req.db.sequelize.query(`
+
+		const existingStudents = await req.db.sequelize.query(`
 			select student.id student, student.nsda id, ss.id ssid, ss.value
 			from student
 				left join student_setting ss
@@ -75,33 +102,56 @@ export const syncNatsAppearances = {
 			order by student.nsda
 		`, {
 			type : req.db.sequelize.QueryTypes.SELECT,
-		}));
+		});
+
+
+		const studentsById = {};
+		existingStudents.forEach( (student) => {
+			if (!studentsById[student.id]) studentsById[student.id] = [];
+			studentsById[student.id].push(student);
+		});
 
 		// And then the individual students
 
 		const updateStudent = `update student_setting set value = :value where id = :ssid`;
 		const createStudent = `insert into student_setting (tag, student, value) VALUES ('nats_appearances', :student, :value)`;
+		const deleteSS = `delete from student_setting where tag="nats_appearances" and student = :student`;
 
-		for await (const student of studentNats.data) {
+		studentNats.data.forEach( (student) => {
+			if (studentsById[student.person_id]) {
+				studentsById[student.person_id].forEach( (existing) => {
 
-			if (existingStudents[student.person_id]) {
-				for await (const existing of existingStudents[student.person_id]) {
-					if (existing.ssid) {
-						if (parseInt(existing.value) !== parseInt(student.appearances)) {
+					if (existing.ssid && student.appearances < 1) {
 
-							await req.db.sequelize.query(
-								updateStudent, {
-									replacements : {
-										value    : student.appearances,
-										ssid     : existing.ssid,
-									},
-									type : req.db.sequelize.QueryTypes.UPDATE,
-								}
-							);
-							counters.students++;
-						}
-					} else {
-						await req.db.sequelize.query(
+						const promise = req.db.sequelize.query(
+							deleteSS, {
+								replacements : {
+									chapter : existing.student,
+								},
+								type : req.db.sequelize.QueryTypes.DELETE,
+							}
+						);
+
+						promises.push(promise);
+
+					} else if (existing.ssid && parseInt(existing.value) !== parseInt(student.appearances)) {
+
+						const promise = req.db.sequelize.query(
+							updateStudent, {
+								replacements : {
+									value    : student.appearances,
+									ssid     : existing.ssid,
+								},
+								type : req.db.sequelize.QueryTypes.UPDATE,
+							}
+						);
+
+						counters.students++;
+						promises.push(promise);
+
+					} else if (!existing.ssid) {
+
+						const promise = req.db.sequelize.query(
 							createStudent, {
 								replacements : {
 									value    : student.appearances,
@@ -111,10 +161,13 @@ export const syncNatsAppearances = {
 							}
 						);
 						counters.students++;
+						promises.push(promise);
 					}
-				}
+				});
 			}
-		}
+		});
+
+		await Promise.all(promises);
 
 		res.status(200).json({
 			error   : false,
@@ -130,7 +183,7 @@ export const natsIndividualHonors = {
 		const db = req.db;
 
 		const studentResults = await db.sequelize.query(`
-			select 
+			select
 				student.id studentId, student.first, student.last, student.nsda studentNSDA,
 				school.id schoolId, school.name schoolName, chapter.nsda chapterNSDA,
 				result.rank, result.place,
@@ -139,7 +192,7 @@ export const natsIndividualHonors = {
 				tourn.name tournName, tourn.start tournDate
 
 			from (entry, result, result_set, entry_student es, student, event, tourn, tourn_setting ts, ballot, panel, round)
-				left join event_setting nsda_code 
+				left join event_setting nsda_code
 					on nsda_code.event = event.id
 					and nsda_code.tag = 'nsda_event_category'
 				left join school on entry.school = school.id
