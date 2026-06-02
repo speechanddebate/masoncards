@@ -37,6 +37,7 @@ export const shareRooms = async (roundId) => {
 				and ps.panel = panel.id
 			)
 			and panel.round = round.id
+			and round.published IN (1, 2)
 			and round.event = event.id
 			and event.tourn = tourn.id
 	`, {
