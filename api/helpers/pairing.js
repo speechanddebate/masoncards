@@ -53,8 +53,8 @@ export const formatPairingBlast = async (queryData, req) => {
 			round.type roundtype, round.flighted roundflights,
 			room.id roomid, room.name roomname, room.url roomurl, room.notes roomnotes,
 			round.start_time roundstart,
-			event.id eventid, event.abbr eventabbr, event.name eventname,
-			event.type eventtype,
+			event.id eventid, event.abbr eventAbbr, event.name eventName,
+			event.type eventType,
 			include_room_notes.value include_room_notes,
 			use_normal_rooms.value use_normal_rooms,
 			event_online_hybrid.value event_online_hybrid,
@@ -68,7 +68,13 @@ export const formatPairingBlast = async (queryData, req) => {
 			aff_label.value aff_label,
 			neg_label.value neg_label,
 			tourn.tz,
-			limit_info.value limitInfo
+			limit_info.value limitInfo,
+			(select
+				prep_offset.value
+				from event_setting prep_offset
+				where prep_offset.event = event.id
+				and prep_offset.tag = 'prep_offset'
+			) prepOffset
 
 		from (tourn, event, round, panel section)
 
@@ -240,16 +246,35 @@ export const formatPairingBlast = async (queryData, req) => {
 
 				if (round.flights > 1) {
 					sectionMessage.text += `\n Flight ${section.flight} \n`;
-					sectionMessage.html += `<p style="width: 25%; display: inline-block;">Flight ${section.flight}</p>`;
+					sectionMessage.html += `<p>Flight ${section.flight}</p>`;
 					sectionMessage.single += `\n\tFlt ${section.flight} Start ${round.shortstart[section.flight]}\n`;
 				}
 
-				sectionMessage.text += `Start ${round.shortstart[section.flight]} \n`;
+				if (round.eventType === 'speech') {
+					sectionMessage.text += `Section: ${section.letter} `;
+					sectionMessage.text += `<p>Section: ${section.letter}</p>`;
+				}
+
+
+				if (round.prepStart) {
+					sectionMessage.text += `\nDraw Starts at ${round.prepStart}\n`;
+					sectionMessage.html += `<p>Draw Starts at ${round.prepStart}</p>`;
+					sectionMessage.text += `Round Starts at ${round.shortstart[section.flight]} \n`;
+					sectionMessage.html += `<p>Round Starts at ${round.start[section.flight]}</p>`;
+				} else {
+					sectionMessage.text += `Start ${round.shortstart[section.flight]} \n`;
+					sectionMessage.html += `<p>Start: ${round.start[section.flight]}</p>`;
+				}
+
 				sectionMessage.text += `Room: ${section.room} `;
 
-				sectionMessage.html += `<p>Start: ${round.start[section.flight]}</p>`;
+				if (round.eventType === 'speech') {
+					sectionMessage.text += `\nSection: ${section.letter}\n`;
+					sectionMessage.html += `<p>Section: ${section.letter}</p>`;
+				}
+
 				sectionMessage.html += `<p>Room: ${section.room} `;
-				sectionMessage.single += `\tRoom ${section.room} Counter ${counter++} Letter ${section.letter}`;
+				sectionMessage.single += `\tRoom ${section.room} `;
 
 				if (section.hybrid) {
 					sectionMessage.text += ` (OL/HYB) \n`;
@@ -284,7 +309,7 @@ export const formatPairingBlast = async (queryData, req) => {
 						if (round.settings.anonymous_public && judge.code) {
 							sectionMessage.judgeText += `${judge.role} ${judge.code} `;
 							sectionMessage.judgeSingle += `${judge.role} ${judge.code} `;
-							sectionMessage.judgeHTML += `<p> ${judge.role} ${judge.code} `;
+							sectionMessage.judgeHTML += `<p style="margin-left: 16px"> ${judge.role} ${judge.code} `;
 						} else {
 							sectionMessage.judgeText += `${judge.role} ${judge.first} ${judge.last}`;
 							sectionMessage.judgeText += `${judge.role} ${judge.first} ${judge.middle ? `${judge.middle} ` : ''}${judge.last}`;
@@ -292,12 +317,15 @@ export const formatPairingBlast = async (queryData, req) => {
 								sectionMessage.judgeSingle += ', ';
 							}
 							sectionMessage.judgeSingle += `${judge.role} ${judge.first} ${judge.last}`;
-							sectionMessage.judgeHTML += `<p>${judge.role} ${judge.first} ${judge.middle ? `${judge.middle} ` : ''}${judge.last}</p>`;
+							sectionMessage.judgeHTML += `<p style="margin-left: 16px">${judge.role} ${judge.first} ${judge.middle ? `${judge.middle} ` : ''}${judge.last}`;
 							if (judge.pronoun) {
 								sectionMessage.judgeText += ` (${judge.pronoun})`;
-								sectionMessage.judgeHTML += `<p style='font-style: italic; font-size: 90%; padding-left: 8pt;'>${judge.pronoun}</p>`;
+								sectionMessage.judgeHTML += ` <span style="font-style: italic; display: inline-block; font-size: 80%; padding-left: 16px; padding-bottom: 2px; line-height: 12px;">(${judge.pronoun})</span>`;
 							}
+
+							sectionMessage.judgeHTML += `</p>`;
 						}
+
 						sectionMessage.judgeText += `\n`;
 						sectionMessage.judgeHTML += `<p></p>`;
 					}
@@ -333,7 +361,7 @@ export const formatPairingBlast = async (queryData, req) => {
 					}
 
 					sectionMessage.entryText += `${entry.position === 'FLIP' ? '' : entry.position} ${entry.code} `;
-					sectionMessage.entryHTML += `<p>${entry.position === 'FLIP' ? '' : entry.position} ${entry.code} `;
+					sectionMessage.entryHTML += `<p style='margin-left: 16px;'>${entry.position === 'FLIP' ? '' : entry.position} ${entry.code} `;
 
 					if (entry.pronoun && !round.settings.anonymous_public) {
 						sectionMessage.entryText += `(${entry.pronoun})`;
@@ -369,7 +397,7 @@ export const formatPairingBlast = async (queryData, req) => {
 					// Myself
 					if (!blastData.entries[entry.id]) {
 						blastData.entries[entry.id] = {
-							subject: `${entry.code} ${round.name} ${round.eventAbbr}`,
+							subject: `${entry.code} ${round.name} ${round.eventAbbr || ''}`,
 							text : sectionMessage.text,
 							html : sectionMessage.html,
 						};
@@ -689,9 +717,9 @@ const processRounds = async (rawRounds) => {
 				type           : rawRound.roundtype,
 				flights        : rawRound.roundflights,
 				eventId        : rawRound.eventid,
-				eventName      : rawRound.eventname,
-				eventAbbr      : rawRound.eventabbr,
-				eventType      : rawRound.eventtype,
+				eventName      : rawRound.eventName,
+				eventAbbr      : rawRound.eventAbbr,
+				eventType      : rawRound.eventType,
 				limitInfo      : rawRound.limitInfo,
 				flip           : false,
 				start          : {},
@@ -703,6 +731,13 @@ const processRounds = async (rawRounds) => {
 				schools        : {},
 				sidelocks      : {},
 			};
+
+			if (rawRound.prepOffset) {
+				round.prepStart = moment(rawRound.roundstart)
+						.subtract(rawRound.prepOffset, 'minutes')
+						.tz(rawRound.tz)
+						.format('h:mm z');
+			}
 
 			const settingTags = [
 				'include_room_notes',
