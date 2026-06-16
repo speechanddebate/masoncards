@@ -10,7 +10,12 @@ const autoBlastRounds = async () => {
 		select aq.id, aq.tag, aq.created_at,
 			aq.created_by,
 			round.id roundId, round.name, round.label, round.published,
-			event.tourn tournId, event.type eventType, event.abbr eventAbbr
+			event.id eventId, event.tourn tournId, event.type eventType, event.abbr eventAbbr,
+			(select nats.value
+				from tourn_setting nats
+				where nats.tag = 'nsda_nats'
+				and nats.tourn = tourn.id
+			) nats
 		from (autoqueue aq, round, event, tourn)
 		where (aq.active_at < NOW() OR aq.active_at IS NULL)
 			and aq.tag IN ("blast", "publish", "blast_publish")
@@ -35,15 +40,13 @@ const autoBlastRounds = async () => {
 
 	promises.push(aq);
 
-	pendingQueues.forEach( async (round) => {
+	await pendingQueues.forEach( async (round) => {
 
-		// Set the round to publish and process the various dependencies
-		// thereof.
+		// Set the round to publish and process the various dependencies thereof.
 
 		if (round.tag !== 'blast') {
 
 			if (round.published !== 1) {
-
 				const publish = db.sequelize.query(`
 					update round set published = 1 where round.id = :roundId
 				`, {
@@ -52,9 +55,59 @@ const autoBlastRounds = async () => {
 					},
 					type: db.Sequelize.QueryTypes.UPDATE,
 				});
-
 				promises.push(publish);
 			}
+
+			const changeLog = {
+				round  : round.roundId,
+				event  : round.eventId,
+				person : round.created_by,
+				description : 'Round published by scheduled blast',
+			};
+
+			if (parseInt(round.nats) === 1) {
+
+				const newLog = {
+					event       : round.eventId,
+					round       : round.roundId,
+					person      : round.created_by || 7,
+					description : 'Creating round ranks report for Nationals',
+				};
+
+				const change = db.sequelize.query(
+					`insert into change_log (tag, event, round, person, description) values ('tabbing', :event, :round, :person, :description)`,
+					{
+						replacements: { ...newLog },
+						type: db.Sequelize.QueryTypes.INSERT
+					}
+				);
+
+				promises.push(change);
+
+				const report = {
+					event     : round.eventId,
+					round     : round.roundId,
+					person    : round.created_by,
+				};
+
+				const aq = db.sequelize.query(
+					`insert into autoqueue (tag, event, round, created_by, active_at) values ('scores', :event, :round, :person, NOW())`,
+					{
+						replacements: { ...report },
+						type: db.Sequelize.QueryTypes.INSERT
+					}
+				);
+
+				promises.push(aq);
+			}
+
+			const cl = await db.sequelize.query(
+				`insert into change_log (tag, round, event, person, description) values ('tabbing', :round, :event, :person, :description)`,
+				{
+					replacements: { ...changeLog },
+					type: db.Sequelize.QueryTypes.INSERT
+				}
+			);
 
 			if (round.eventType === 'debate') {
 				// Docshare rooms
@@ -76,6 +129,7 @@ const autoBlastRounds = async () => {
 		}
 
 		if (round.tag !== 'publish') {
+
 			// Blast the round! BLAST IT!
 
 			const req = {
