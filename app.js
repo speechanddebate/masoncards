@@ -6,6 +6,7 @@ import expressWinston from 'express-winston';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import { initialize } from 'express-openapi';
+// eslint-disable-next-line import/no-unresolved
 import { v7 as uuid } from 'uuid';
 import swaggerUI from 'swagger-ui-express';
 import config from './config/config.js';
