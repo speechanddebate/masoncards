@@ -9,7 +9,7 @@ const autoBlastRounds = async () => {
 	const pendingQueues = await db.sequelize.query(`
 		select aq.id, aq.tag, aq.created_at,
 			aq.created_by,
-			round.id roundId, round.name, round.label, round.published,
+			round.id roundId, round.name, round.label, round.published, round.type roundType,
 			event.id eventId, event.tourn tournId, event.type eventType, event.abbr eventAbbr,
 			(select nats.value
 				from tourn_setting nats
@@ -65,7 +65,7 @@ const autoBlastRounds = async () => {
 				description : 'Round published by scheduled blast',
 			};
 
-			if (parseInt(round.nats) === 1) {
+			if (parseInt(round.nats) === 1 && round.roundType) {
 
 				const newLog = {
 					event       : round.eventId,
@@ -91,7 +91,8 @@ const autoBlastRounds = async () => {
 				};
 
 				const aq = db.sequelize.query(
-					`insert into autoqueue (tag, event, round, created_by, active_at) values ('scores', :event, :round, :person, NOW())`,
+					`insert into autoqueue (tag, event, round, created_by, active_at)
+					values ('scores', :event, :round, :person, NOW())`,
 					{
 						replacements: { ...report },
 						type: db.Sequelize.QueryTypes.INSERT
