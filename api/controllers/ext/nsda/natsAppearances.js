@@ -104,7 +104,6 @@ export const syncNatsAppearances = {
 			type : req.db.sequelize.QueryTypes.SELECT,
 		});
 
-
 		const studentsById = {};
 		existingStudents.forEach( (student) => {
 			if (!studentsById[student.id]) studentsById[student.id] = [];

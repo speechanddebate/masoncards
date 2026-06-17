@@ -2,7 +2,7 @@
 import moment from 'moment-timezone';
 import { getFollowers, getPairingFollowers } from '../../../helpers/followers.js';
 import { notify } from '../../../helpers/blast.js';
-import { shareRooms } from  '../../tab/round/share.js';
+import { shareRooms } from  './share.js';
 import { sendPairingBlast, formatPairingBlast } from '../../../helpers/pairing.js';
 
 export const blastRoundMessage = {

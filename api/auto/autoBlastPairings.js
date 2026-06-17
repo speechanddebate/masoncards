@@ -29,15 +29,15 @@ const autoBlastRounds = async () => {
 
 	const promises = [];
 
-//	const aq = db.sequelize.query(`
-//		delete autoqueue.*
-//			from autoqueue
-//		where (autoqueue.active_at < NOW() OR autoqueue.active_at IS NULL)
-//			and autoqueue.tag IN ("blast", "publish", "blast_publish")
-//	`, {
-//		type: db.Sequelize.QueryTypes.DELETE,
-//	});
-//	promises.push(aq);
+	const aq = db.sequelize.query(`
+		delete autoqueue.*
+			from autoqueue
+		where (autoqueue.active_at < NOW() OR autoqueue.active_at IS NULL)
+			and autoqueue.tag IN ("blast", "publish", "blast_publish")
+	`, {
+		type: db.Sequelize.QueryTypes.DELETE,
+	});
+	promises.push(aq);
 
 	await pendingQueues.forEach( (round) => {
 
@@ -77,7 +77,7 @@ const autoBlastRounds = async () => {
 					`insert into change_log (tag, event, round, person, description) values ('tabbing', :event, :round, :person, :description)`,
 					{
 						replacements: { ...newLog },
-						type: db.Sequelize.QueryTypes.INSERT
+						type: db.Sequelize.QueryTypes.INSERT,
 					}
 				);
 
@@ -89,23 +89,23 @@ const autoBlastRounds = async () => {
 					person    : round.created_by,
 				};
 
-				const aq = db.sequelize.query(
+				const aqi = db.sequelize.query(
 					`insert into autoqueue (tag, event, round, created_by, active_at)
 					values ('scores', :event, :round, :person, NOW())`,
 					{
 						replacements: { ...report },
-						type: db.Sequelize.QueryTypes.INSERT
+						type: db.Sequelize.QueryTypes.INSERT,
 					}
 				);
 
-				promises.push(aq);
+				promises.push(aqi);
 			}
 
 			const cl = db.sequelize.query(
 				`insert into change_log (tag, round, event, person, description) values ('tabbing', :round, :event, :person, :description)`,
 				{
 					replacements: { ...changeLog },
-					type: db.Sequelize.QueryTypes.INSERT
+					type: db.Sequelize.QueryTypes.INSERT,
 				}
 			);
 

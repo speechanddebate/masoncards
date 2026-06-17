@@ -229,8 +229,6 @@ export const formatPairingBlast = async (queryData, req) => {
 			return a - b;
 		});
 
-		let counter = 1;
-
 		for (const flight of sectionFlights) {
 
 			for (const sectionId of Object.keys(round.flightSections[flight])) {
@@ -254,7 +252,6 @@ export const formatPairingBlast = async (queryData, req) => {
 					sectionMessage.text += `Section: ${section.letter} `;
 					sectionMessage.text += `<p>Section: ${section.letter}</p>`;
 				}
-
 
 				if (round.prepStart) {
 					sectionMessage.text += `\nDraw Starts at ${round.prepStart}\n`;
@@ -734,9 +731,9 @@ const processRounds = async (rawRounds) => {
 
 			if (rawRound.prepOffset) {
 				round.prepStart = moment(rawRound.roundstart)
-						.subtract(rawRound.prepOffset, 'minutes')
-						.tz(rawRound.tz)
-						.format('h:mm z');
+					.subtract(rawRound.prepOffset, 'minutes')
+					.tz(rawRound.tz)
+					.format('h:mm z');
 			}
 
 			const settingTags = [
