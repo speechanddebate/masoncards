@@ -1,4 +1,5 @@
 import { assert } from 'chai';
+// eslint-disable-next-line import/no-unresolved
 import { v4 as uuidv4 } from 'uuid';
 import config from '../../config/config.js';
 import db from './db.js';
