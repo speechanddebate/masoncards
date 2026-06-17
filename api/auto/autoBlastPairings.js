@@ -29,18 +29,17 @@ const autoBlastRounds = async () => {
 
 	const promises = [];
 
-	const aq = db.sequelize.query(`
-		delete autoqueue.*
-			from autoqueue
-		where (autoqueue.active_at < NOW() OR autoqueue.active_at IS NULL)
-			and autoqueue.tag IN ("blast", "publish", "blast_publish")
-	`, {
-		type: db.Sequelize.QueryTypes.DELETE,
-	});
+//	const aq = db.sequelize.query(`
+//		delete autoqueue.*
+//			from autoqueue
+//		where (autoqueue.active_at < NOW() OR autoqueue.active_at IS NULL)
+//			and autoqueue.tag IN ("blast", "publish", "blast_publish")
+//	`, {
+//		type: db.Sequelize.QueryTypes.DELETE,
+//	});
+//	promises.push(aq);
 
-	promises.push(aq);
-
-	await pendingQueues.forEach( async (round) => {
+	await pendingQueues.forEach( (round) => {
 
 		// Set the round to publish and process the various dependencies thereof.
 
@@ -102,13 +101,15 @@ const autoBlastRounds = async () => {
 				promises.push(aq);
 			}
 
-			const cl = await db.sequelize.query(
+			const cl = db.sequelize.query(
 				`insert into change_log (tag, round, event, person, description) values ('tabbing', :round, :event, :person, :description)`,
 				{
 					replacements: { ...changeLog },
 					type: db.Sequelize.QueryTypes.INSERT
 				}
 			);
+
+			promises.push(cl);
 
 			if (round.eventType === 'debate') {
 				// Docshare rooms
@@ -153,7 +154,6 @@ const autoBlastRounds = async () => {
 			const blast = blastRoundPairing.POST(req, res);
 			promises.push(blast);
 		}
-
 	});
 
 	await Promise.all(promises);
