@@ -681,7 +681,7 @@ export const tournDashboard = {
 				and round.timeslot  = timeslot.id
 				and ballot.entry    = entry.id
 				and entry.active    = 1
-				and round.published = 1
+				and round.published IN (1,2,3)
 				and panel.bye       = 0
 				and ballot.bye      = 0
 				and ballot.forfeit  = 0
