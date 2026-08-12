@@ -197,7 +197,7 @@ export const getLinodeInstances = async ( limit ) => {
 
 	const databaseSyncs = [];
 
-	const tabroomMachines = existingMachines.data.data.filter( machine => {
+	const tabroomMachines = existingMachines.data?.data?.filter( machine => {
 
 		if (limit) {
 			if (
@@ -297,11 +297,11 @@ export const increaseLinodeCount = async (whodunnit, countNumber, silent) => {
 
 	const existingMachines = await getLinodeInstances();
 
-	const control = existingMachines.filter(
+	const control = existingMachines?.filter(
 		machine => machine.tags.includes('control')
 	);
 
-	const tabwebs = existingMachines.filter(
+	const tabwebs = existingMachines?.filter(
 		machine => machine.tags.includes(config.LINODE.WEBHOST_BASE)
 	);
 
