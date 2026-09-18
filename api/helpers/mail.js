@@ -11,6 +11,10 @@ export const emailBlast = async (inputData) => {
 
 	const promises = [];
 
+	if (messageData.noReply) {
+		delete messageData.replyTo;
+	}
+
 	if (messageData.share) {
 
 		transporter = nodemailer.createTransport({
@@ -137,7 +141,7 @@ export const emailBlast = async (inputData) => {
 		debugLogger.info(`Text ${messageData.text}`);
 		debugLogger.info(`HTML ${messageData.html}`);
 		debugLogger.info(`From ${messageData.from}`);
-		debugLogger.info(`ReplyTo ${messageData.replyTo}`);
+		debugLogger.info(`ReplyTo ${messageData.replyTo || 'None Set'}`);
 	}
 
 	const promise = new Promise( (resolve) => {

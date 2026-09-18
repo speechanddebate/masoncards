@@ -15,9 +15,10 @@ import { errorLogger } from './logger.js';
 //		url     : string // URL appended to the email or where the click-through of
 //				  notification lands.  Optional.
 //		append  : string // Text appended to the message as a footer. Optional.
-//		noWeb   : boolean  // Optional.  If true , no web pushes sent , only email
-//		noEmail : boolean  // Optional.  If true , no email sent, only web pushes
-//		noInbox : boolean  // Optional.  If true , no message created in Tabroom inbox
+//		noWeb   : boolean  // Optional. If true, no web pushes sent , only email
+//		noReply : boolean  // Optional. If true, do not supply a ReplyTo address
+//		noEmail : boolean  // Optional. If true, no email sent, only web pushes
+//		noInbox : boolean  // Optional. If true, no message created in Tabroom inbox
 //	}
 
 function onlyUnique(value, index, array) {
@@ -35,6 +36,10 @@ export const notify = async (inputData) => {
 	inputData.ids = inputData.ids.filter(onlyUnique);
 
 	const promises = [];
+
+	if (inputData.noReply) {
+		delete inputData.replyTo;
+	}
 
 	if (!inputData.noEmail) {
 		pushReply.email = emailNotify(inputData);
