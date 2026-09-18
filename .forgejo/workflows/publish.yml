@@ -1,0 +1,36 @@
+name: Tabroom Mason Publish
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  CI: false
+  SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+  HUSKY: 0
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [masoncards]
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Publish ${{ matrix.app }} image
+        run: ./bin/publish.sh ${{ matrix.app }} ${{ github.sha }} production
+        env:
+          REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+          REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+          PUSH_IMAGE: ${{ github.event_name == 'push' }}
+
+      - name: If image was published change icon
+        if: success()
+        run: echo "SLACK_ICON=:white_check_mark:" >> $GITHUB_ENV
+
+      - name: Send slack notification
+        if: always()
+        uses: https://git.speechanddebate.org/speechanddebate/action-slack-notify@master
