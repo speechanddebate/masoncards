@@ -27,6 +27,13 @@ jobs:
           REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
           PUSH_IMAGE: ${{ github.event_name == 'push' }}
 
+      - name: Publish ${{ matrix.app }} cron image
+        run: ./bin/publish-cron.sh ${{ matrix.app }} ${{ github.sha }} production
+        env:
+          REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+          REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+          PUSH_IMAGE: ${{ github.event_name == 'push' }}
+
       - name: If image was published change icon
         if: success()
         run: echo "SLACK_ICON=:white_check_mark:" >> $GITHUB_ENV

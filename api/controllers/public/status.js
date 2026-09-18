@@ -5,6 +5,7 @@ export const systemStatus = {
 	GET: async (req, res) => {
 		return res.status(200).json({
 			message  : 'OK',
+			version  : '1.2.1',
 			webhost  : config.DOCKERHOST || config.HOST || 'undefined',
 			server   : os.hostname(),
 			load     : os.loadavg(),
@@ -19,6 +20,7 @@ export const systemStatus = {
 	POST: async (req, res) => {
 		return res.status(200).json({
 			message  : 'OK',
+			version  : '1.2.1',
 			webhost  : config.DOCKERHOST || config.HOST || 'undefined',
 			server   : os.hostname(),
 			load     : os.loadavg(),
