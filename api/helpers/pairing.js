@@ -513,13 +513,13 @@ export const formatPairingBlast = async (queryData, req) => {
 						judgeMessage.html += `</p>`;
 					}
 
-					judgeMessage.url = `${config.WEB_URL}/user/judge/panels.mhtml`;
+					judgeMessage.url = `${config.BLAST_URL || config.WEB_URL }/user/judge/panels.mhtml`;
 					judgeMessage.text += sectionMessage.entryText;
 					judgeMessage.html += sectionMessage.entryHTML;
 
 					judgeMessage.html += `
 						<p><a
-							href="${config.WEB_URL}/user/judge/panels.mhtml"
+							href="${config.BLAST_URL || config.WEB_URL }/user/judge/panels.mhtml"
 						>Access Your Ballot</a></p>
 					`;
 
