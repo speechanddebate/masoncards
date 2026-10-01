@@ -139,6 +139,7 @@ const autoScale = async () => {
 		const needed = usageData.serverTarget - servers.length;
 		let alert = `<p>Under forecasted needs. Spinning up ${needed} machines</p>`;
 		let response = {};
+		const options = { noEmail = true };
 
 		if (loadThresholds?.ENABLED) {
 			response = await increaseLinodeCount(user, needed, true);
@@ -147,6 +148,7 @@ const autoScale = async () => {
 			alert += '</pre>';
 		} else {
 			alert += '<h5>Test Run Complete.  Autoscaler not enabled to actually take action.</h5>';
+			options.noEmail = false;
 		}
 
 		if (response.machineLimit) {
@@ -172,7 +174,7 @@ const autoScale = async () => {
 			return;
 		}
 
-		await notifyCloudAdmins(alert, 'Scaled Up Based on Anticipated Capacity');
+		await notifyCloudAdmins(alert, 'Scaled Up Based on Anticipated Capacity', options);
 		return;
 	}
 
@@ -184,12 +186,14 @@ const autoScale = async () => {
 		const needed = servers.length - usageData.serverTarget;
 		let alert = `<p>Over forecasted needs. Usage data of ${usageData.totalUsers} requires just ${usageData.serverTarget} machines</p>`;
 		alert += `<p>Checking load levels to ensure extra capacity</p>`;
+		const options = { noEmail = true };
 
 		if (onePercentage < 20 && fifteenPercentage < 30) {
 			alert += `<p>Low load confirmed. ${onePercentage.toFixed(2)}% of capacity in active use.</p>`;
 			alert += `<p>Destroying ${needed} machines</p>`;
 		} else {
 			alert += `<p>Load too high to adjust. ${onePercentage.toFixed(2)}% of capacity in active use. 15 minute load is ${fifteenPercentage.toFixed(2)} </p>`;
+			options.noEmail = false;
 		}
 
 		if (loadThresholds?.ENABLED) {
@@ -201,11 +205,11 @@ const autoScale = async () => {
 			alert += '<h5>Test Run Complete.  Autoscaler not enabled to actually take action.</h5>';
 		}
 
-		await notifyCloudAdmins(alert, 'Scaled Down Based on Anticipated Capacity');
+		await notifyCloudAdmins(alert, 'Scaled Down Based on Anticipated Capacity', options);
 	}
 };
 
-const notifyCloudAdmins = async (log, subject) => {
+const notifyCloudAdmins = async (log, subject, options = {}) => {
 
 	// Testing Mode for Palmer Only
 	let sqlLimit = '';
@@ -233,6 +237,7 @@ const notifyCloudAdmins = async (log, subject) => {
 		html    : log,
 		from    : `Tabroom Autoscaler <autoscale@tabroom.com>`,
 		subject : `Cloud Scale Change: ${subject}`,
+		...options
 	};
 
 	if (config.LINODE.NOTIFY_SLACK) {
