@@ -139,7 +139,7 @@ const autoScale = async () => {
 		const needed = usageData.serverTarget - servers.length;
 		let alert = `<p>Under forecasted needs. Spinning up ${needed} machines</p>`;
 		let response = {};
-		const options = { noEmail = true };
+		const options = { noEmail: true };
 
 		if (loadThresholds?.ENABLED) {
 			response = await increaseLinodeCount(user, needed, true);
@@ -186,7 +186,7 @@ const autoScale = async () => {
 		const needed = servers.length - usageData.serverTarget;
 		let alert = `<p>Over forecasted needs. Usage data of ${usageData.totalUsers} requires just ${usageData.serverTarget} machines</p>`;
 		alert += `<p>Checking load levels to ensure extra capacity</p>`;
-		const options = { noEmail = true };
+		const options = { noEmail: true };
 
 		if (onePercentage < 20 && fifteenPercentage < 30) {
 			alert += `<p>Low load confirmed. ${onePercentage.toFixed(2)}% of capacity in active use.</p>`;
