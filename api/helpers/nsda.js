@@ -112,7 +112,9 @@ export const syncLearnResults = async (person) => {
 	for (const nsdaId of Object.keys(nsdaIds)) {
 		const path = `/members/${nsdaId}/learn`;
 		const learn = await getNSDA(path);
-		learnResults.push(...learn);
+		if (learn && (typeof learn === 'object')) {
+			learnResults.push(...learn);
+		}
 	}
 
 	if (!learnResults.length > 0) {
