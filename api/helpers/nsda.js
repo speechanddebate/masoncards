@@ -385,7 +385,7 @@ export const syncLearnByCourse = async (quiz) => {
 			if (usersByNsdaId[person.nsda] || usersByEmail[person.email.toLowerCase()]) {
 
 				const promise = db.sequelize.query(`
-					update person_quiz pq set completed = 1, approved_by = 3, updated_at = :updatedAt where id = :pqId
+					update person_quiz pq set completed = 1, pending = 0, approved_by = 3, updated_at = :updatedAt where id = :pqId
 				`, {
 					replacements: { pqId: person.pq, updatedAt: person.updated_at },
 					type: db.sequelize.QueryTypes.UPDATE,
