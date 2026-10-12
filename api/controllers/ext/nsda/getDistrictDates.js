@@ -35,7 +35,7 @@ export const getDistrictDates = {
 				type: db.Sequelize.QueryTypes.SELECT,
 			});
 
-			results = results.map(d => ({ district: Number(d.district), ...d }));
+			results = results.map(d => ({ ...d, district: Number(d.district) }));
 			districtDates = results;
 		} catch (err) {
 			console.log(`Error condition recieved`);
