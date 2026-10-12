@@ -5,6 +5,7 @@ import Session from './Session.js';
 import School from './School.js';
 import SchoolSetting from './SchoolSetting.js';
 import Chapter from './Chapter.js';
+import DistrictDate from './DistrictDate.js';
 import Event from './Event.js';
 import Round from './Round.js';
 import Student from './Student.js';
@@ -22,6 +23,7 @@ export default {
 	School,
 	SchoolSetting,
 	Chapter,
+	DistrictDate,
 	Event,
 	Round,
 	Student,

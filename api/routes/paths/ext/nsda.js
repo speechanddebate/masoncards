@@ -2,12 +2,14 @@
 
 // Router controllers
 import getPersonHistory from '../../../controllers/ext/nsda/getPersonHistory.js';
+import getDistrictDates from '../../../controllers/ext/nsda/getDistrictDates.js';
 import { postPayment } from '../../../controllers/ext/nsda/payment.js';
 import ipLocation from '../../../controllers/user/account/ipLocation.js';
 import { syncNatsAppearances, natsIndividualHonors } from '../../../controllers/ext/nsda/natsAppearances.js';
 
 export default [
 	{ path : '/ext/nsda/history'                 , module : getPersonHistory }     ,
+	{ path : '/ext/nsda/district-dates'          , module : getDistrictDates }     ,
 	{ path : '/ext/nsda/payment'                 , module : postPayment }          ,
 	{ path : '/ext/nsda/payment/tourn/{tournId}' , module : postPayment }          ,
 	{ path : '/ext/nsda/nats/appearances'        , module : syncNatsAppearances }  ,
